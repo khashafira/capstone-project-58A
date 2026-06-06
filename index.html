@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Waste Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">🌱</div>
+      <div class="logo-text">SWM<span>System</span></div>
+    </div>
+    <nav class="nav-menu">
+      <a href="#" class="nav-item active" onclick="switchTab('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Dasbor Ekologis
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('dropoff')">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Layanan Drop-off
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('pickup')">
+        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        Layanan Pickup
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('rewards')">
+        <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 6.8c-.72 0-1.3-.58-1.3-1.3s.58-1.3 1.3-1.3 1.3.58 1.3 1.3-.58 1.3-1.3 1.3z"/></svg>
+        Tukar Poin Reward
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('history')">
+        <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        Riwayat Aktivitas
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <p id="sb-username">Memuat...</p>
+      <a href="api/logout.php" style="color:var(--coral); text-decoration:none; font-size:13px; font-weight:600;">Keluar Aplikasi</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <section id="tab-dashboard" class="tab-section active">
+      <header class="content-header">
+        <div>
+          <h1 class="page-title">Dasbor Ringkasan Dampak</h1>
+          <p class="page-subtitle">Kontribusi nyata penumpukan & reduksi emisi karbon rumah tangga Anda.</p>
+        </div>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card total-waste">
+          <div class="stat-header">
+            <span class="stat-title">Total Setor Sampah</span>
+            <span class="stat-icon">⚖️</span>
+          </div>
+          <div class="stat-value" id="dash-total-berat">0.00 <span class="stat-unit">kg</span></div>
+          <p class="stat-desc">Akumulasi seluruh transaksi terverifikasi</p>
+        </div>
+
+        <div class="stat-card points">
+          <div class="stat-header">
+            <span class="stat-title">Poin Belanja Anda</span>
+            <span class="stat-icon">🪙</span>
+          </div>
+          <div class="stat-value" id="dash-poin">0</div>
+          <p class="stat-desc">Dapat ditukarkan dengan saldo E-Wallet</p>
+        </div>
+
+        <div class="stat-card co2">
+          <div class="stat-header">
+            <span class="stat-title">Reduksi Emisi CO₂</span>
+            <span class="stat-icon">💨</span>
+          </div>
+          <div class="stat-value" id="dash-co2">0.00 <span class="stat-unit">kg</span></div>
+          <p class="stat-desc">Potensi gas rumah kaca yang dicegah</p>
+        </div>
+
+        <div class="stat-card trees">
+          <div class="stat-header">
+            <span class="stat-title">Ekuivalensi Pohon</span>
+            <span class="stat-icon">🌳</span>
+          </div>
+          <div class="stat-value" id="dash-pohon">0.00 <span class="stat-unit">pohon/thn</span></div>
+          <p class="stat-desc">Setara dampak serapan karbon pohon dewasa</p>
+        </div>
+      </div>
+
+      <div class="dashboard-details">
+        <div class="card">
+          <h3 class="card-title">Rincian Komposisi Sampah & Dampak Karbon Spesifik</h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kategori Sampah</th>
+                  <th>Total Berat</th>
+                  <th>Koefisien Reduksi Emission</th>
+                  <th>Total CO₂ Direduksi</th>
+                  <th>Ekuivalensi Pohon</th>
+                </tr>
+              </thead>
+              <tbody id="dash-table-body">
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-dropoff" class="tab-section">
+      <header class="content-header">
+        <div>
+          <h1 class="page-title">Layanan Mandiri Drop-off</h1>
+          <p class="page-subtitle">Pilih lokasi TPS terdekat dan antarkan sampah terpilah Anda secara mandiri.</p>
+        </div>
+      </header>
+
+      <div class="grid-2col">
+        <div class="card">
+          <h3 class="card-title">Form Registrasi Kedatangan Drop-off</h3>
+          <form id="form-dropoff" onsubmit="handleDropoffSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="do-tps">Pilih Lokasi TPS Tujuan</label>
+              <select class="form-select" id="do-tps" required>
+                <option value="TPS Jatinangor Center">TPS Jatinangor Center (Kawasan Pendidikan)</option>
+                <option value="TPS Cimekar Indah">TPS Cimekar Indah (Samping Kantor Desa)</option>
+                <option value="TPS Griya Kebraon Surabaya">TPS Griya Kebraon Surabaya (Blok Utara)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="do-kategori">Kategori Dominan</label>
+              <select class="form-select" id="do-kategori" required>
+                <option value="Plastik">Plastik (Botol, Kemasan PET)</option>
+                <option value="Kertas/Kardus">Kertas / Kardus Bekas</option>
+                <option value="Logam/Kaleng">Logam / Kaleng Alumunium</option>
+                <option value="Kaca">Kaca / Botol Kaca Kategori Spesifik</option>
+                <option value="Organik">Organik / Sisa Makanan Rumah Tangga</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Waktu Kedatangan</label>
+              <div class="info-box-inline">
+                <strong>Waktu Cetak:</strong> <span id="do-datetime-display">-</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="do-perkiraan">Perkiraan Berat Total (kg)</label>
+              <input type="number" class="form-input" id="do-perkiraan" placeholder="Misal: 5" min="1" required>
+            </div>
+
+            <button type="submit" class="btn btn-green">Generate QR Code Drop-off</button>
+          </form>
+        </div>
+
+        <div class="card flex-center" style="text-align:center;">
+          <h3 class="card-title">Tiket Digital & QR Code Anda</h3>
+          <p class="text-muted" style="font-size:13px; margin-bottom:20px;">Tunjukkan QR Code ini ke petugas loket TPS untuk discan dan dilakukan penimbangan berat riil.</p>
+          
+          <div id="do-qr-container" style="display:none; background:#fff; padding:20px; border:2px dashed var(--green); border-radius:12px; display:inline-block; margin:0 auto;">
+            <div id="do-qr-title" style="font-family:'Syne', sans-serif; font-weight:700; color:var(--green); margin-bottom:10px;">DROP-OFF TICKET</div>
+            <svg width="160" height="160" style="background:#222; border-radius:8px; padding:10px;">
+              <rect x="10" y="10" width="40" height="40" fill="#fff"/>
+              <rect x="20" y="20" width="20" height="20" fill="#000"/>
+              <rect x="110" y="10" width="40" height="40" fill="#fff"/>
+              <rect x="120" y="20" width="20" height="20" fill="#000"/>
+              <rect x="10" y="110" width="40" height="40" fill="#fff"/>
+              <rect x="20" y="120" width="20" height="20" fill="#000"/>
+              <path d="M 60 20 L 100 20 M 60 40 L 80 40 M 100 50 L 100 90 M 20 70 L 20 90 M 40 80 L 80 80 M 120 70 L 140 70 M 110 110 L 150 150" stroke="#fff" stroke-width="6" stroke-linecap="square"/>
+            </svg>
+            <div id="do-qr-code-text" style="font-family:monospace; margin-top:10px; font-weight:700; background:var(--gray-light); padding:4px 8px; border-radius:4px;">SWM-DO-XXXXX</div>
+            <div id="do-qr-meta" style="font-size:11px; color:var(--gray); margin-top:8px; text-align:left; line-height:1.4;"></div>
+          </div>
+          <div id="do-qr-placeholder" class="text-muted" style="margin-top:40px;">[ Belum ada data tiket yang digenerate ]</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-pickup" class="tab-section">
+      <header class="content-header">
+        <div>
+          <h1 class="page-title">Permintaan Penjemputan (Pickup)</h1>
+          <p class="page-subtitle">Petugas armada motor sampah kami akan mendatangi titik koordinat rumah Anda sesuai jadwal.</p>
+        </div>
+      </header>
+
+      <div class="grid-2col">
+        <div class="card">
+          <h3 class="card-title">Isi Detail Jadwal & Lokasi Armada</h3>
+          <form id="form-pickup" onsubmit="handlePickupSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="pu-date">Pilih Hari Penjemputan</label>
+              <select class="form-select" id="pu-date" required>
+                </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pu-time">Pilih Rentang Jam Petugas</label>
+              <select class="form-select" id="pu-time" required>
+                <option value="08:00 - 10:00 WIB">Pagi Hari (08:00 - 10:00 WIB)</option>
+                <option value="10:30 - 12:30 WIB">Siang Menjelang Dzuhur (10:30 - 12:30 WIB)</option>
+                <option value="13:30 - 15:30 WIB">Sore Hari (13:30 - 15:30 WIB)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pu-alamat">Alamat Lengkap & Detail Rumah</label>
+              <textarea class="form-textarea" id="pu-alamat" rows="3" placeholder="Contoh: Jl. Raya Jatinangor No.21, RT 02 RW 05, Belakang Toko Kelontong Berkah, Pagar Warna Hijau." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pu-catatan">Catatan Tambahan untuk Driver Motor</label>
+              <input type="text" class="form-input" id="pu-catatan" placeholder="Misal: Sampah plastik sudah diikat di dalam kardus besar di depan teras">
+            </div>
+
+            <button type="submit" class="btn btn-blue">Booking Jadwal Kurir Sampah</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Status Tiket Pickup Berjalan</h3>
+          <div id="pu-status-placeholder" class="text-muted" style="padding:40px 0; text-align:center;">[ Belum ada order penjemputan aktif saat ini ]</div>
+          <div id="pu-status-card" style="display:none; border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:16px; background:var(--bg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:8px;">
+              <span style="font-family:'Syne',sans-serif; font-weight:700; color:var(--blue);" id="pu-status-id">SWM-PU-XXXX</span>
+              <span class="status-badge badge-amber" id="pu-status-text">Menunggu Driver</span>
+            </div>
+            <div style="font-size:13px; line-height:1.6; color:var(--text);">
+              <p>🗓️ <strong>Jadwal:</strong> <span id="pu-status-jadwal">-</span></p>
+              <p>📍 <strong>Lokasi:</strong> <span id="pu-status-alamat">-</span></p>
+              <p>📝 <strong>Notes:</strong> <span id="pu-status-notes">-</span></p>
+            </div>
+            <div style="margin-top:16px; font-size:11px; color:var(--text-muted); background:#fff; padding:8px; border-radius:6px; border-left:3px solid var(--blue);">
+              💡 *Poin reward & perhitungan emisi karbon akan otomatis diupdate setelah kurir menimbang berat real di rumah Anda.*
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-rewards" class="tab-section">
+      <header class="content-header">
+        <div>
+          <h1 class="page-title">Penukaran Poin Kompensasi Digital</h1>
+          <p class="page-subtitle">Konversikan poin kontribusi lingkungan Anda menjadi saldo uang elektronik secara instant.</p>
+        </div>
+      </header>
+
+      <div class="card" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, var(--green-dark), var(--green)); color:#fff;">
+        <div>
+          <div style="font-size:14px; opacity:0.8;">Poin yang Tersedia untuk Dicairkan</div>
+          <div style="font-size:36px; font-family:'Syne',sans-serif; font-weight:800; margin:4px 0;" id="rw-current-poin">0</div>
+          <div style="font-size:12px; opacity:0.7;">*Nilai Kurs Tetap: 1 Poin = Rp 1,- Rupiah</div>
+        </div>
+        <div style="font-size:48px;">🪙</div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="card">
+          <h3 class="card-title">Form Reduksi & Redeem Poin</h3>
+          <form id="form-redeem" onsubmit="handleRedeemSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="rw-wallet">Pilih Provider E-Wallet / Bank</label>
+              <select class="form-select" id="rw-wallet" required>
+                <option value="GoPay">GoPay (Digital Wallet)</option>
+                <option value="OVO">OVO Cash</option>
+                <option value="Dana">DANA Indonesia</option>
+                <option value="ShopeePay">ShopeePay</option>
+                <option value="LinkAja">LinkAja Layanan Negara</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rw-phone">Nomor HP Akun / No Rekening</label>
+              <input type="text" class="form-input" id="rw-phone" placeholder="Contoh: 081234567890" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="rw-jumlah">Jumlah Poin yang Ingin Ditebus</label>
+              <input type="number" class="form-input" id="rw-jumlah" placeholder="Minimal 5000" min="1" required>
+            </div>
+
+            <button type="submit" class="btn btn-green" style="background:var(--amber);">Konfirmasi Cairkan Poin</button>
+          </form>
+        </div>
+
+        <div class="card" style="background:var(--amber-light); border-color:rgba(186,117,23,0.2);">
+          <h3 class="card-title" style="color:var(--amber);">Syarat Pencairan Saldo</h3>
+          <ul style="padding-left:20px; font-size:13px; line-height:1.8; color:var(--text);">
+            <li>Minimal penukaran poin adalah sebesar <strong>5.000 Poin</strong> per transaksi pengajuan.</li>
+            <li>Proses transfer ke e-wallet dilakukan oleh sistem API integrasi pihak ketiga secara otomatis dalam rentang 1-5 menit.</li>
+            <li>Pastikan nomor akun e-wallet Anda sudah terdaftar dan aktif (Premium/Valid) untuk menghindari penolakan otomatis dari sistem perbankan.</li>
+            <li>Aktivitas penukaran poin akan tercatat permanen di dalam tab log riwayat dompet aplikasi.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-history" class="tab-section">
+      <header class="content-header">
+        <div>
+          <h1 class="page-title">Log & Jurnal Aktivitas Lingkungan</h1>
+          <p class="page-subtitle">Histori transaksional aktivitas pembuangan serta mutasi pencairan insentif poin.</p>
+        </div>
+      </header>
+
+      <div class="card">
+        <h3 class="card-title">Riwayat Log Menyeluruh</h3>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal Aksi</th>
+                <th>ID Transaksi</th>
+                <th>Jenis Aktivitas</th>
+                <th>Deskripsi Parameter</th>
+                <th>Bobot/Nilai</th>
+                <th>Status Validasi</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

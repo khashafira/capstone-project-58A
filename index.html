@@ -5,337 +5,2494 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Waste Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<style>
+  :root {
+    --green: #05382e;
+    --green-light: #E1F5EE;
+    --green-dark: #085041;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --coral: #D85A30;
+    --coral-light: #FAECE7;
+    --gray: #5F5E5A;
+    --gray-light: #F1EFE8;
+    --bg: #f7f9f6;
+    --surface: #ffffff;
+    --text: #1a1a18;
+    --text-muted: #6b6b67;
+    --border: rgba(0,0,0,0.1);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+
+  /* ─── PAGES ─── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ─── AUTH PAGES ─── */
+  .auth-wrap {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-left {
+    background: linear-gradient(160deg, var(--green-dark) 0%, var(--green) 60%,   #195643 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-left::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 60px solid rgba(255,255,255,0.06);
+    bottom: -80px; right: -80px;
+  }
+  .auth-left::after {
+    content: '';
+    position: absolute;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    border: 40px solid rgba(255,255,255,0.06);
+    top: -60px; right: 60px;
+  }
+  .brand-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+  }
+  .brand-logo span { color: #9FE1CB; }
+  .auth-left p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1rem;
+    max-width: 320px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .auth-stat-row { display: flex; gap: 1.5rem; margin-top: 2rem; }
+  .auth-stat { color: white; }
+  .auth-stat .num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700; }
+  .auth-stat .lbl { font-size: 0.75rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.05em; }
+  .auth-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    background: var(--surface);
+  }
+  .auth-form-box { width: 100%; max-width: 380px; }
+  .auth-form-box h2 { font-size: 1.7rem; margin-bottom: 0.4rem; }
+  .auth-form-box .sub { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+
+  label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  input[type=text], input[type=email], input[type=password], input[type=tel], select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--green); background: white; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: var(--radius-sm);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary { background: var(--green); color: white; width: 100%; }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--green); border: 1.5px solid var(--green); }
+  .btn-outline:hover { background: var(--green-light); }
+  .btn-sm { padding: 8px 16px; font-size: 0.8rem; }
+  .btn-danger { background: var(--coral); color: white; }
+  .btn-amber { background: var(--amber); color: white; }
+
+  .auth-switch { text-align: center; margin-top: 1.2rem; font-size: 0.88rem; color: var(--text-muted); }
+  .auth-switch a { color: var(--green); font-weight: 600; cursor: pointer; text-decoration: none; }
+
+  .otp-box { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .otp-box input { width: 50px; height: 50px; text-align: center; font-size: 1.4rem; font-weight: 700; padding: 0; margin: 0; }
+
+  /* ─── APP SHELL ─── */
+  .app-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    background: var(--green-dark);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .sidebar-brand { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .sidebar-brand span { color: #9FE1CB; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+  .nav-item.active { background: rgba(255,255,255,0.18); color: white; }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sidebar-spacer { flex: 1; }
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    margin-top: 1rem;
+  }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #9FE1CB; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; color: var(--green-dark); flex-shrink: 0; }
+  .sidebar-user-info { flex: 1; min-width: 0; }
+  .sidebar-user-name { color: white; font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-user-pts { color: rgba(255,255,255,0.55); font-size: 0.75rem; }
+  .sidebar-logout { cursor: pointer; color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 6px; display: block; text-align: right; }
+  .sidebar-logout:hover { color: white; }
+
+  /* ─── MAIN CONTENT ─── */
+  .main { padding: 2rem 2.5rem; background: var(--bg); }
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { font-size: 1.7rem; }
+  .page-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+
+  /* ─── STAT CARDS ─── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+  }
+  .stat-card .icon-wrap { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+  .stat-card .icon-wrap svg { width: 20px; height: 20px; }
+  .stat-card .val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 700; }
+  .stat-card .lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+  /* ─── BADGE ─── */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-coral { background: var(--coral-light); color: var(--coral); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-gray { background: var(--gray-light); color: var(--gray); }
+
+  /* ─── TABLE ─── */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th { text-align: left; padding: 10px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 500; }
+  td { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.04); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--green-light); }
+
+  /* ─── STEPS / WIZARD ─── */
+  .step-indicator { display: flex; align-items: center; gap: 0; margin-bottom: 2rem; }
+  .step-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; border: 2px solid var(--border); color: var(--text-muted); background: var(--surface); }
+  .step-dot.active { background: var(--green); border-color: var(--green); color: white; }
+  .step-dot.done { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .step-line { flex: 1; height: 2px; background: var(--border); }
+  .step-line.done { background: var(--green); }
+
+  /* ─── GRID HELPERS ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+
+  /* ─── CATEGORY PICK ─── */
+  .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .cat-btn {
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+  }
+  .cat-btn:hover { border-color: var(--green); background: var(--green-light); }
+  .cat-btn.selected { border-color: var(--green); background: var(--green-light); }
+  .cat-btn .cat-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+  .cat-btn .cat-name { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; }
+  .cat-btn .cat-pts { font-size: 0.75rem; color: var(--green); margin-top: 4px; }
+
+  /* ─── QR Mock ─── */
+  .qr-box {
+    width: 180px; height: 180px;
+    border: 3px solid var(--green);
+    border-radius: 12px;
+    margin: 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .qr-pattern { display: grid; grid-template-columns: repeat(10,1fr); gap: 2px; padding: 12px; width: 100%; height: 100%; }
+  .qr-cell { border-radius: 1px; }
+
+  /* ─── REWARD CARD ─── */
+  .reward-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+  .reward-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .reward-img {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+  .reward-body { padding: 1rem; }
+  .reward-name { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+  .reward-pts { font-size: 0.8rem; color: var(--green); font-weight: 600; }
+
+  /* ─── MAP MOCK ─── */
+  .map-mock {
+    background: #e8f5e2;
+    border-radius: var(--radius);
+    height: 280px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-pin { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .map-pin-dot { width: 28px; height: 28px; background: var(--green); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .map-pin-label { font-size: 0.7rem; font-weight: 600; background: white; padding: 2px 6px; border-radius: 4px; margin-top: 4px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar { height: 8px; background: var(--green-light); border-radius: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 20px; transition: width 0.6s ease; }
+
+  /* ─── NOTIFICATION ─── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--green-dark);
+    color: white;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ─── EDUKASI ─── */
+  .edu-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+  .edu-card-header { padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .edu-card-header span { font-family: 'Syne', sans-serif; font-weight: 700; }
+  .edu-body { padding: 0 1.5rem 1.2rem; color: var(--text-muted); font-size: 0.88rem; line-height: 1.8; display: none; }
+  .edu-body.open { display: block; }
+
+  /* ─── ADMIN ─── */
+  .admin-sidebar { background: #2C2C2A; }
+  .admin-nav-item { color: rgba(255,255,255,0.6); }
+  .admin-nav-item.active { background: rgba(255,200,0,0.15); color: #FAC775; }
+
+  /* ─── MODAL OVERLAY ─── */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+  }
+  .overlay.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+  }
+  .modal h3 { font-family: 'Syne', sans-serif; margin-bottom: 1rem; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; cursor: pointer; background: var(--gray-light); border: none; border-radius: 6px; padding: 4px 8px; font-size: 1rem; }
+
+  /* ─── FILE UPLOAD ─── */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-area:hover { border-color: var(--green); background: var(--green-light); }
+  .upload-area svg { width: 40px; height: 40px; color: var(--green); margin: 0 auto 0.5rem; display: block; }
+
+  /* ─── LEADERBOARD ─── */
+  .lb-row { display: flex; align-items: center; gap: 1rem; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 6px; background: var(--bg); }
+  .lb-rank { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; width: 28px; text-align: center; }
+  .lb-rank.gold { color: #BA7517; }
+  .lb-rank.silver { color: #888780; }
+  .lb-rank.bronze { color: #993C1D; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+  @media (max-width: 900px) {
+    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-left { display: none; }
+    .app-shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
 </head>
 <body>
 
-<div class="app-container">
-  <aside class="sidebar">
-    <div class="logo-area">
-      <div class="logo-icon">🌱</div>
-      <div class="logo-text">SWM<span>System</span></div>
+<!-- ═══════════════════════════════════════════════════
+     PAGE: LOGIN
+═══════════════════════════════════════════════════ -->
+<div class="page active" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="brand-logo" style="margin-bottom:1.5rem"><img src="LOGO SMART WASTE-02-01.png" style="width:280px;max-width:100%"></div>
+      <p>Platform pengelolaan sampah cerdas berbasis teknologi digital untuk masyarakat Indonesia yang lebih bersih.</p>
+      <div class="auth-stat-row">
+        <div class="auth-stat"><div class="num">68M+</div><div class="lbl">Ton sampah/tahun</div></div>
+        <div class="auth-stat"><div class="num">37%</div><div class="lbl">Berhasil dikelola</div></div>
+        <div class="auth-stat"><div class="num">500+</div><div class="lbl">Bank sampah aktif</div></div>
+      </div>
     </div>
-    <nav class="nav-menu">
-      <a href="#" class="nav-item active" onclick="switchTab('dashboard')">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Dasbor Ekologis
-      </a>
-      <a href="#" class="nav-item" onclick="switchTab('dropoff')">
-        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        Layanan Drop-off
-      </a>
-      <a href="#" class="nav-item" onclick="switchTab('pickup')">
-        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm12 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-        Layanan Pickup
-      </a>
-      <a href="#" class="nav-item" onclick="switchTab('rewards')">
-        <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 6.8c-.72 0-1.3-.58-1.3-1.3s.58-1.3 1.3-1.3 1.3.58 1.3 1.3-.58 1.3-1.3 1.3z"/></svg>
-        Tukar Poin Reward
-      </a>
-      <a href="#" class="nav-item" onclick="switchTab('history')">
-        <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-        Riwayat Aktivitas
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <p id="sb-username">Memuat...</p>
-      <a href="api/logout.php" style="color:var(--coral); text-decoration:none; font-size:13px; font-weight:600;">Keluar Aplikasi</a>
+    <div class="auth-right">
+      <div class="auth-form-box">
+        <h2>Selamat Datang 👋</h2>
+        <p class="sub">Masuk ke akun Smart Waste Management kamu</p>
+        <label>Email / Nomor HP</label>
+        <input type="email" id="login-email" placeholder="contoh@email.com" value="user@smartwaste.id">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" value="password123">
+        <button class="btn btn-primary" onclick="doLogin()">Masuk ke Dashboard</button>
+        <div class="auth-switch">Belum punya akun? <a onclick="showPage('page-register')">Daftar sekarang</a></div>
+        <div class="auth-switch" style="margin-top:10px"><a onclick="showPage('page-admin-login')">Login sebagai Admin →</a></div>
+      </div>
     </div>
-  </aside>
-
-  <main class="main-content">
-    
-    <section id="tab-dashboard" class="tab-section active">
-      <header class="content-header">
-        <div>
-          <h1 class="page-title">Dasbor Ringkasan Dampak</h1>
-          <p class="page-subtitle">Kontribusi nyata penumpukan & reduksi emisi karbon rumah tangga Anda.</p>
-        </div>
-      </header>
-
-      <div class="stats-grid">
-        <div class="stat-card total-waste">
-          <div class="stat-header">
-            <span class="stat-title">Total Setor Sampah</span>
-            <span class="stat-icon">⚖️</span>
-          </div>
-          <div class="stat-value" id="dash-total-berat">0.00 <span class="stat-unit">kg</span></div>
-          <p class="stat-desc">Akumulasi seluruh transaksi terverifikasi</p>
-        </div>
-
-        <div class="stat-card points">
-          <div class="stat-header">
-            <span class="stat-title">Poin Belanja Anda</span>
-            <span class="stat-icon">🪙</span>
-          </div>
-          <div class="stat-value" id="dash-poin">0</div>
-          <p class="stat-desc">Dapat ditukarkan dengan saldo E-Wallet</p>
-        </div>
-
-        <div class="stat-card co2">
-          <div class="stat-header">
-            <span class="stat-title">Reduksi Emisi CO₂</span>
-            <span class="stat-icon">💨</span>
-          </div>
-          <div class="stat-value" id="dash-co2">0.00 <span class="stat-unit">kg</span></div>
-          <p class="stat-desc">Potensi gas rumah kaca yang dicegah</p>
-        </div>
-
-        <div class="stat-card trees">
-          <div class="stat-header">
-            <span class="stat-title">Ekuivalensi Pohon</span>
-            <span class="stat-icon">🌳</span>
-          </div>
-          <div class="stat-value" id="dash-pohon">0.00 <span class="stat-unit">pohon/thn</span></div>
-          <p class="stat-desc">Setara dampak serapan karbon pohon dewasa</p>
-        </div>
-      </div>
-
-      <div class="dashboard-details">
-        <div class="card">
-          <h3 class="card-title">Rincian Komposisi Sampah & Dampak Karbon Spesifik</h3>
-          <div style="overflow-x: auto;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Kategori Sampah</th>
-                  <th>Total Berat</th>
-                  <th>Koefisien Reduksi Emission</th>
-                  <th>Total CO₂ Direduksi</th>
-                  <th>Ekuivalensi Pohon</th>
-                </tr>
-              </thead>
-              <tbody id="dash-table-body">
-                </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-dropoff" class="tab-section">
-      <header class="content-header">
-        <div>
-          <h1 class="page-title">Layanan Mandiri Drop-off</h1>
-          <p class="page-subtitle">Pilih lokasi TPS terdekat dan antarkan sampah terpilah Anda secara mandiri.</p>
-        </div>
-      </header>
-
-      <div class="grid-2col">
-        <div class="card">
-          <h3 class="card-title">Form Registrasi Kedatangan Drop-off</h3>
-          <form id="form-dropoff" onsubmit="handleDropoffSubmit(event)">
-            <div class="form-group">
-              <label class="form-label" for="do-tps">Pilih Lokasi TPS Tujuan</label>
-              <select class="form-select" id="do-tps" required>
-                <option value="TPS Jatinangor Center">TPS Jatinangor Center (Kawasan Pendidikan)</option>
-                <option value="TPS Cimekar Indah">TPS Cimekar Indah (Samping Kantor Desa)</option>
-                <option value="TPS Griya Kebraon Surabaya">TPS Griya Kebraon Surabaya (Blok Utara)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="do-kategori">Kategori Dominan</label>
-              <select class="form-select" id="do-kategori" required>
-                <option value="Plastik">Plastik (Botol, Kemasan PET)</option>
-                <option value="Kertas/Kardus">Kertas / Kardus Bekas</option>
-                <option value="Logam/Kaleng">Logam / Kaleng Alumunium</option>
-                <option value="Kaca">Kaca / Botol Kaca Kategori Spesifik</option>
-                <option value="Organik">Organik / Sisa Makanan Rumah Tangga</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Waktu Kedatangan</label>
-              <div class="info-box-inline">
-                <strong>Waktu Cetak:</strong> <span id="do-datetime-display">-</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="do-perkiraan">Perkiraan Berat Total (kg)</label>
-              <input type="number" class="form-input" id="do-perkiraan" placeholder="Misal: 5" min="1" required>
-            </div>
-
-            <button type="submit" class="btn btn-green">Generate QR Code Drop-off</button>
-          </form>
-        </div>
-
-        <div class="card flex-center" style="text-align:center;">
-          <h3 class="card-title">Tiket Digital & QR Code Anda</h3>
-          <p class="text-muted" style="font-size:13px; margin-bottom:20px;">Tunjukkan QR Code ini ke petugas loket TPS untuk discan dan dilakukan penimbangan berat riil.</p>
-          
-          <div id="do-qr-container" style="display:none; background:#fff; padding:20px; border:2px dashed var(--green); border-radius:12px; display:inline-block; margin:0 auto;">
-            <div id="do-qr-title" style="font-family:'Syne', sans-serif; font-weight:700; color:var(--green); margin-bottom:10px;">DROP-OFF TICKET</div>
-            <svg width="160" height="160" style="background:#222; border-radius:8px; padding:10px;">
-              <rect x="10" y="10" width="40" height="40" fill="#fff"/>
-              <rect x="20" y="20" width="20" height="20" fill="#000"/>
-              <rect x="110" y="10" width="40" height="40" fill="#fff"/>
-              <rect x="120" y="20" width="20" height="20" fill="#000"/>
-              <rect x="10" y="110" width="40" height="40" fill="#fff"/>
-              <rect x="20" y="120" width="20" height="20" fill="#000"/>
-              <path d="M 60 20 L 100 20 M 60 40 L 80 40 M 100 50 L 100 90 M 20 70 L 20 90 M 40 80 L 80 80 M 120 70 L 140 70 M 110 110 L 150 150" stroke="#fff" stroke-width="6" stroke-linecap="square"/>
-            </svg>
-            <div id="do-qr-code-text" style="font-family:monospace; margin-top:10px; font-weight:700; background:var(--gray-light); padding:4px 8px; border-radius:4px;">SWM-DO-XXXXX</div>
-            <div id="do-qr-meta" style="font-size:11px; color:var(--gray); margin-top:8px; text-align:left; line-height:1.4;"></div>
-          </div>
-          <div id="do-qr-placeholder" class="text-muted" style="margin-top:40px;">[ Belum ada data tiket yang digenerate ]</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-pickup" class="tab-section">
-      <header class="content-header">
-        <div>
-          <h1 class="page-title">Permintaan Penjemputan (Pickup)</h1>
-          <p class="page-subtitle">Petugas armada motor sampah kami akan mendatangi titik koordinat rumah Anda sesuai jadwal.</p>
-        </div>
-      </header>
-
-      <div class="grid-2col">
-        <div class="card">
-          <h3 class="card-title">Isi Detail Jadwal & Lokasi Armada</h3>
-          <form id="form-pickup" onsubmit="handlePickupSubmit(event)">
-            <div class="form-group">
-              <label class="form-label" for="pu-date">Pilih Hari Penjemputan</label>
-              <select class="form-select" id="pu-date" required>
-                </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="pu-time">Pilih Rentang Jam Petugas</label>
-              <select class="form-select" id="pu-time" required>
-                <option value="08:00 - 10:00 WIB">Pagi Hari (08:00 - 10:00 WIB)</option>
-                <option value="10:30 - 12:30 WIB">Siang Menjelang Dzuhur (10:30 - 12:30 WIB)</option>
-                <option value="13:30 - 15:30 WIB">Sore Hari (13:30 - 15:30 WIB)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="pu-alamat">Alamat Lengkap & Detail Rumah</label>
-              <textarea class="form-textarea" id="pu-alamat" rows="3" placeholder="Contoh: Jl. Raya Jatinangor No.21, RT 02 RW 05, Belakang Toko Kelontong Berkah, Pagar Warna Hijau." required></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="pu-catatan">Catatan Tambahan untuk Driver Motor</label>
-              <input type="text" class="form-input" id="pu-catatan" placeholder="Misal: Sampah plastik sudah diikat di dalam kardus besar di depan teras">
-            </div>
-
-            <button type="submit" class="btn btn-blue">Booking Jadwal Kurir Sampah</button>
-          </form>
-        </div>
-
-        <div class="card">
-          <h3 class="card-title">Status Tiket Pickup Berjalan</h3>
-          <div id="pu-status-placeholder" class="text-muted" style="padding:40px 0; text-align:center;">[ Belum ada order penjemputan aktif saat ini ]</div>
-          <div id="pu-status-card" style="display:none; border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:16px; background:var(--bg);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:8px;">
-              <span style="font-family:'Syne',sans-serif; font-weight:700; color:var(--blue);" id="pu-status-id">SWM-PU-XXXX</span>
-              <span class="status-badge badge-amber" id="pu-status-text">Menunggu Driver</span>
-            </div>
-            <div style="font-size:13px; line-height:1.6; color:var(--text);">
-              <p>🗓️ <strong>Jadwal:</strong> <span id="pu-status-jadwal">-</span></p>
-              <p>📍 <strong>Lokasi:</strong> <span id="pu-status-alamat">-</span></p>
-              <p>📝 <strong>Notes:</strong> <span id="pu-status-notes">-</span></p>
-            </div>
-            <div style="margin-top:16px; font-size:11px; color:var(--text-muted); background:#fff; padding:8px; border-radius:6px; border-left:3px solid var(--blue);">
-              💡 *Poin reward & perhitungan emisi karbon akan otomatis diupdate setelah kurir menimbang berat real di rumah Anda.*
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-rewards" class="tab-section">
-      <header class="content-header">
-        <div>
-          <h1 class="page-title">Penukaran Poin Kompensasi Digital</h1>
-          <p class="page-subtitle">Konversikan poin kontribusi lingkungan Anda menjadi saldo uang elektronik secara instant.</p>
-        </div>
-      </header>
-
-      <div class="card" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, var(--green-dark), var(--green)); color:#fff;">
-        <div>
-          <div style="font-size:14px; opacity:0.8;">Poin yang Tersedia untuk Dicairkan</div>
-          <div style="font-size:36px; font-family:'Syne',sans-serif; font-weight:800; margin:4px 0;" id="rw-current-poin">0</div>
-          <div style="font-size:12px; opacity:0.7;">*Nilai Kurs Tetap: 1 Poin = Rp 1,- Rupiah</div>
-        </div>
-        <div style="font-size:48px;">🪙</div>
-      </div>
-
-      <div class="grid-2col">
-        <div class="card">
-          <h3 class="card-title">Form Reduksi & Redeem Poin</h3>
-          <form id="form-redeem" onsubmit="handleRedeemSubmit(event)">
-            <div class="form-group">
-              <label class="form-label" for="rw-wallet">Pilih Provider E-Wallet / Bank</label>
-              <select class="form-select" id="rw-wallet" required>
-                <option value="GoPay">GoPay (Digital Wallet)</option>
-                <option value="OVO">OVO Cash</option>
-                <option value="Dana">DANA Indonesia</option>
-                <option value="ShopeePay">ShopeePay</option>
-                <option value="LinkAja">LinkAja Layanan Negara</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="rw-phone">Nomor HP Akun / No Rekening</label>
-              <input type="text" class="form-input" id="rw-phone" placeholder="Contoh: 081234567890" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="rw-jumlah">Jumlah Poin yang Ingin Ditebus</label>
-              <input type="number" class="form-input" id="rw-jumlah" placeholder="Minimal 5000" min="1" required>
-            </div>
-
-            <button type="submit" class="btn btn-green" style="background:var(--amber);">Konfirmasi Cairkan Poin</button>
-          </form>
-        </div>
-
-        <div class="card" style="background:var(--amber-light); border-color:rgba(186,117,23,0.2);">
-          <h3 class="card-title" style="color:var(--amber);">Syarat Pencairan Saldo</h3>
-          <ul style="padding-left:20px; font-size:13px; line-height:1.8; color:var(--text);">
-            <li>Minimal penukaran poin adalah sebesar <strong>5.000 Poin</strong> per transaksi pengajuan.</li>
-            <li>Proses transfer ke e-wallet dilakukan oleh sistem API integrasi pihak ketiga secara otomatis dalam rentang 1-5 menit.</li>
-            <li>Pastikan nomor akun e-wallet Anda sudah terdaftar dan aktif (Premium/Valid) untuk menghindari penolakan otomatis dari sistem perbankan.</li>
-            <li>Aktivitas penukaran poin akan tercatat permanen di dalam tab log riwayat dompet aplikasi.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-history" class="tab-section">
-      <header class="content-header">
-        <div>
-          <h1 class="page-title">Log & Jurnal Aktivitas Lingkungan</h1>
-          <p class="page-subtitle">Histori transaksional aktivitas pembuangan serta mutasi pencairan insentif poin.</p>
-        </div>
-      </header>
-
-      <div class="card">
-        <h3 class="card-title">Riwayat Log Menyeluruh</h3>
-        <div style="overflow-x: auto;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Tanggal Aksi</th>
-                <th>ID Transaksi</th>
-                <th>Jenis Aktivitas</th>
-                <th>Deskripsi Parameter</th>
-                <th>Bobot/Nilai</th>
-                <th>Status Validasi</th>
-              </tr>
-            </thead>
-            <tbody id="history-table-body">
-              </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  </div>
 </div>
 
-<script src="script.js"></script>
+<!-- ═══════════════════════════════════════════════════
+     PAGE: REGISTER
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-register">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="brand-logo" style="margin-bottom:1.5rem"><img src="LOGO SMART WASTE-02-01.png" style="width:280px;max-width:100%"></div>
+      <p>Bergabunglah dengan ribuan pengguna yang sudah berkontribusi menjaga lingkungan dan mendapatkan reward menarik!</p>
+      <div style="margin-top:2rem; color:rgba(255,255,255,0.7); font-size:0.9rem">
+        <div style="margin-bottom:10px">✅ Drop-off & Pickup sampah mudah</div>
+        <div style="margin-bottom:10px">✅ Kumpulkan poin dari setiap transaksi</div>
+        <div style="margin-bottom:10px">✅ Tukar poin dengan voucher menarik</div>
+        <div>✅ Pantau dampak lingkungan kamu</div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form-box">
+        <div id="reg-step1">
+          <h2>Buat Akun Baru</h2>
+          <p class="sub">Isi data diri kamu</p>
+          <label>Nama Lengkap</label>
+          <input type="text" id="reg-name" placeholder="Budi Santoso">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="budi@email.com">
+          <label>Nomor HP</label>
+          <input type="tel" id="reg-phone" placeholder="08123456789">
+          <label>Password</label>
+          <input type="password" id="reg-pass" placeholder="Min. 8 karakter">
+          <button class="btn btn-primary" onclick="showRegStep2()">Lanjut Verifikasi OTP</button>
+          <div class="auth-switch">Sudah punya akun? <a onclick="showPage('page-login')">Masuk</a></div>
+        </div>
+        <div id="reg-step2" style="display:none">
+          <h2>Verifikasi OTP</h2>
+          <p class="sub">Kode OTP telah dikirim ke nomor HP kamu (simulasi: <b>1234</b>)</p>
+          <div class="otp-box">
+            <input type="text" maxlength="1" class="otp-input" oninput="otpMove(this,0)">
+            <input type="text" maxlength="1" class="otp-input" oninput="otpMove(this,1)">
+            <input type="text" maxlength="1" class="otp-input" oninput="otpMove(this,2)">
+            <input type="text" maxlength="1" class="otp-input" oninput="otpMove(this,3)">
+          </div>
+          <button class="btn btn-primary" onclick="doRegister()">Verifikasi & Buat Akun</button>
+          <div class="auth-switch"><a onclick="document.getElementById('reg-step2').style.display='none';document.getElementById('reg-step1').style.display='block'">← Kembali</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: ADMIN LOGIN
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-admin-login">
+  <div class="auth-wrap">
+    <div class="auth-left" style="background: linear-gradient(160deg, #2C2C2A 0%, #444441 100%)">
+      <div class="brand-logo" style="margin-bottom:1.5rem"><img src="LOGO SMART WASTE-02-01.png" style="width:280px;max-width:100%"></div>
+      <p style="color:rgba(255,255,255,0.7)">Panel Admin — Kelola transaksi, pengguna, dan reward sistem Smart Waste Management.</p>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form-box">
+        <h2>Admin Login 🔐</h2>
+        <p class="sub">Akses terbatas untuk administrator</p>
+        <label>Email Admin</label>
+        <input type="email" id="admin-login-email" placeholder="admin@smartwaste.id" value="admin@smartwaste.id">
+        <label>Password</label>
+        <input type="password" id="admin-login-pass" placeholder="••••••••">
+        <button class="btn btn-primary" style="background:#444441" onclick="doAdminLogin()">Masuk ke Panel Admin</button>
+        <div class="auth-switch"><a onclick="showPage('page-login')">← Kembali ke Login User</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: USER APP (DASHBOARD, DROPOFF, etc.)
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-app">
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand" style="border:none;padding-bottom:0;margin-bottom:2rem;text-align:center"><img src="LOGO SMART WASTE-02-01.png" style="width:180px;max-width:100%;margin:auto;display:block"></div>
+      <nav>
+        <div class="nav-item active" onclick="showSection('sec-dashboard', this)" data-section="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" onclick="showSection('sec-dropoff', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Drop-off Sampah
+        </div>
+        <div class="nav-item" onclick="showSection('sec-pickup', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Pesan Jemput
+        </div>
+        <div class="nav-item" onclick="showSection('sec-reward', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Reward & Poin
+        </div>
+        <div class="nav-item" onclick="showSection('sec-map', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          Peta Bank Sampah
+        </div>
+        <div class="nav-item" onclick="showSection('sec-history', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Riwayat Transaksi
+        </div>
+        <div class="nav-item" onclick="showSection('sec-edukasi', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          Edukasi Sampah
+        </div>
+        <div class="nav-item" onclick="showSection('sec-profile', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profil & Settings
+        </div>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-user">
+        <div class="avatar" id="sb-avatar">B</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sb-name">Budi Santoso</div>
+          <div class="sidebar-user-pts" id="sb-pts">⭐ 1.250 Poin</div>
+        </div>
+      </div>
+      <span class="sidebar-logout" onclick="doLogout()">Keluar →</span>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- ── DASHBOARD ── -->
+      <section id="sec-dashboard" class="fade-in">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+          <p id="greet-text">Selamat datang kembali! Mari setor sampah hari ini 🌿</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="icon-wrap" style="background:var(--green-light)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="val" id="stat-pts">1.250</div>
+            <div class="lbl">Total Poin</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-wrap" style="background:var(--blue-light)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="val" id="stat-trx">8</div>
+            <div class="lbl">Transaksi Bulan Ini</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-wrap" style="background:var(--amber-light)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="val" id="stat-kg">24.5</div>
+            <div class="lbl">Kg Sampah Diolah</div>
+          </div>
+          <div class="stat-card">
+            <div class="icon-wrap" style="background:var(--coral-light)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="val" id="stat-rank">#12</div>
+            <div class="lbl">Ranking Komunitas</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Progress Level</div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.8rem">
+              <div id="level-badge" style="background:var(--green-light);color:var(--green-dark);padding:6px 14px;border-radius:20px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem">🌱 Eco Starter</div>
+              <span id="level-next-text" style="font-size:0.8rem;color:var(--text-muted)">— poin lagi ke level berikutnya</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="level-progress-fill" style="width:0%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:6px">
+              <span id="level-pts-current">0 poin</span>
+              <span id="level-pts-target">—</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Dampak Lingkungan</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
+              <div style="text-align:center;padding:0.8rem;background:var(--green-light);border-radius:10px">
+                <div id="impact-kg" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--green-dark)">0</div>
+                <div style="font-size:0.72rem;color:var(--green);margin-top:2px">Kg Sampah Diolah</div>
+              </div>
+              <div style="text-align:center;padding:0.8rem;background:var(--blue-light);border-radius:10px">
+                <div id="impact-co2" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--blue)">0</div>
+                <div style="font-size:0.72rem;color:var(--blue);margin-top:2px">Kg CO₂ Dikurangi</div>
+              </div>
+              <div style="text-align:center;padding:0.8rem;background:var(--amber-light);border-radius:10px">
+                <div id="impact-trx-month" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--amber)">0</div>
+                <div style="font-size:0.72rem;color:var(--amber);margin-top:2px">Transaksi Bulan Ini</div>
+              </div>
+              <div style="text-align:center;padding:0.8rem;background:var(--coral-light);border-radius:10px">
+                <div id="impact-trees" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--coral)">0</div>
+                <div style="font-size:0.72rem;color:var(--coral);margin-top:2px">Pohon Setara Diselamatkan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Transaksi Terbaru</div>
+          <table>
+            <thead><tr><th>Tanggal</th><th>Jenis Layanan</th><th>Kategori</th><th>Berat</th><th>Poin</th><th>Status</th></tr></thead>
+            <tbody id="recent-trx"></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showSection('sec-dropoff', null)" style="width:auto">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10H7"/><path d="m15 4-6 6 6 6"/></svg>
+            Drop-off Sampah
+          </button>
+          <button class="btn btn-outline" onclick="showSection('sec-pickup', null)" style="width:auto">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/></svg>
+            Pesan Jemput
+          </button>
+          <button class="btn btn-outline" onclick="showSection('sec-reward', null)" style="width:auto;border-color:var(--amber);color:var(--amber)">
+            ⭐ Tukar Reward
+          </button>
+        </div>
+      </section>
+
+      <!-- ── DROP-OFF ── -->
+      <section id="sec-dropoff" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Drop-off Sampah</h1>
+          <p>Antar sampahmu ke bank sampah terdekat & dapatkan poin</p>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-dot active" id="do-step-1">1</div>
+          <div class="step-line" id="do-line-1"></div>
+          <div class="step-dot" id="do-step-2">2</div>
+          <div class="step-line" id="do-line-2"></div>
+          <div class="step-dot" id="do-step-3">3</div>
+          <div class="step-line" id="do-line-3"></div>
+          <div class="step-dot" id="do-step-4">4</div>
+        </div>
+
+        <!-- Step 1: Pilih Kategori -->
+        <div id="do-s1">
+          <div class="card">
+            <div class="card-title">Pilih Kategori Sampah</div>
+            <div class="category-grid">
+              <div class="cat-btn" onclick="selectCategory(this,'Plastik')">
+                <span class="cat-icon">🧴</span>
+                <div class="cat-name">Plastik</div>
+                <div class="cat-pts">+20 poin/kg</div>
+              </div>
+              <div class="cat-btn" onclick="selectCategory(this,'Kertas')">
+                <span class="cat-icon">📦</span>
+                <div class="cat-name">Kertas</div>
+                <div class="cat-pts">+15 poin/kg</div>
+              </div>
+              <div class="cat-btn" onclick="selectCategory(this,'Logam')">
+                <span class="cat-icon">🔩</span>
+                <div class="cat-name">Logam</div>
+                <div class="cat-pts">+30 poin/kg</div>
+              </div>
+              <div class="cat-btn" onclick="selectCategory(this,'Elektronik')">
+                <span class="cat-icon">📱</span>
+                <div class="cat-name">Elektronik</div>
+                <div class="cat-pts">+50 poin/kg</div>
+              </div>
+              <div class="cat-btn" onclick="selectCategory(this,'Organik')">
+                <span class="cat-icon">🍃</span>
+                <div class="cat-name">Organik</div>
+                <div class="cat-pts">+10 poin/kg</div>
+              </div>
+              <div class="cat-btn" onclick="selectCategory(this,'Kaca')">
+                <span class="cat-icon">🫙</span>
+                <div class="cat-name">Kaca</div>
+                <div class="cat-pts">+25 poin/kg</div>
+              </div>
+            </div>
+            <label>Estimasi Berat (kg)</label>
+            <input type="text" id="do-weight" placeholder="contoh: 2.5" style="max-width:200px">
+            <label>Upload Foto Sampah (opsional)</label>
+            <div class="upload-area" onclick="showToast('Foto berhasil diunggah! ✅')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+              <p style="font-size:0.85rem;color:var(--text-muted)">Klik untuk upload foto sampah</p>
+              <p style="font-size:0.75rem;color:var(--text-muted)">JPG, PNG maks. 5MB</p>
+            </div>
+            <button class="btn btn-primary" style="width:auto;margin-top:1rem" onclick="doStep('do',2)">Lanjut Pilih Bank Sampah →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Pilih Bank Sampah -->
+        <div id="do-s2" style="display:none">
+          <div class="card">
+            <div class="card-title">Pilih Bank Sampah & Waktu Drop-off</div>
+            <label>Pilih Bank Sampah</label>
+            <select id="do-bank">
+              <option>Bank Sampah Induk Surabaya — Jl. Kertajaya No. 45</option>
+              <option>Bank Sampah Bersih Jaya — Jl. Diponegoro No. 12</option>
+              <option>Bank Sampah Hijau Lestari — Jl. Rungkut Industri No. 8</option>
+              <option>Bank Sampah Mandiri — Jl. Pemuda No. 67</option>
+            </select>
+            <div id="do-schedule-info" style="background:var(--green-light);border-radius:10px;padding:1rem;margin-top:1rem;font-size:0.88rem;color:var(--green-dark)">
+              📅 <b>Tanggal & Waktu:</b> <span id="do-datetime-display">—</span><br>
+              <span style="font-size:0.78rem;color:var(--text-muted)">Waktu drop-off dicatat otomatis saat kamu konfirmasi</span>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1rem">
+              <button class="btn btn-outline" style="width:auto" onclick="doStep('do',1)">← Kembali</button>
+              <button class="btn btn-primary" style="width:auto" onclick="doStep('do',3)">Konfirmasi Pesanan →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Konfirmasi -->
+        <div id="do-s3" style="display:none">
+          <div class="card">
+            <div class="card-title">Konfirmasi Transaksi Drop-off</div>
+            <div id="do-confirm-detail" style="background:var(--bg);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;font-size:0.9rem;line-height:2"></div>
+            <div style="background:var(--green-light);border-radius:10px;padding:1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px">
+              <span style="font-size:1.5rem">⭐</span>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green-dark)" id="do-pts-preview">+50 Poin</div>
+                <div style="font-size:0.8rem;color:var(--green)">Poin yang akan kamu dapatkan</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem">
+              <button class="btn btn-outline" style="width:auto" onclick="doStep('do',2)">← Kembali</button>
+              <button class="btn btn-primary" style="width:auto" onclick="submitDropoff()">Konfirmasi & Dapatkan QR →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: QR Code -->
+        <div id="do-s4" style="display:none">
+          <div class="card" style="text-align:center">
+            <div class="card-title">QR Code Transaksi</div>
+            <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.5rem">Tunjukkan QR Code ini kepada petugas bank sampah</p>
+            <div class="qr-box" id="qr-display"></div>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.2rem">Kode: <b id="qr-code-text">ECO-DO-2025-4829</b></div>
+            <div style="background:var(--amber-light);border-radius:10px;padding:1rem;margin-bottom:1.5rem;text-align:left">
+              <b style="color:var(--amber);font-size:0.85rem">📋 Instruksi:</b>
+              <ol style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;padding-left:1.2rem;line-height:2">
+                <li>Datang ke bank sampah yang dipilih</li>
+                <li>Serahkan sampah kepada petugas</li>
+                <li>Petugas akan scan QR Code ini</li>
+                <li>Poin otomatis masuk ke akunmu</li>
+              </ol>
+            </div>
+            <button id="btn-scan-dropoff" class="btn btn-primary" style="width:auto" onclick="simulateScan('dropoff')">🔍 Simulasi Scan oleh Petugas</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PESAN JEMPUT ── -->
+      <section id="sec-pickup" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Pesan Jemput Sampah</h1>
+          <p>Petugas kami akan datang ke lokasi kamu</p>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step-dot active" id="pu-step-1">1</div>
+          <div class="step-line" id="pu-line-1"></div>
+          <div class="step-dot" id="pu-step-2">2</div>
+          <div class="step-line" id="pu-line-2"></div>
+          <div class="step-dot" id="pu-step-3">3</div>
+          <div class="step-line" id="pu-line-3"></div>
+          <div class="step-dot" id="pu-step-4">4</div>
+        </div>
+
+        <div id="pu-s1">
+          <div class="card">
+            <div class="card-title">Detail Sampah yang Akan Dijemput</div>
+            <div class="category-grid">
+              <div class="cat-btn" onclick="selectCategory(this,'Plastik')"><span class="cat-icon">🧴</span><div class="cat-name">Plastik</div><div class="cat-pts">+20 poin/kg</div></div>
+              <div class="cat-btn" onclick="selectCategory(this,'Kertas')"><span class="cat-icon">📦</span><div class="cat-name">Kertas</div><div class="cat-pts">+15 poin/kg</div></div>
+              <div class="cat-btn" onclick="selectCategory(this,'Logam')"><span class="cat-icon">🔩</span><div class="cat-name">Logam</div><div class="cat-pts">+30 poin/kg</div></div>
+              <div class="cat-btn" onclick="selectCategory(this,'Elektronik')"><span class="cat-icon">📱</span><div class="cat-name">Elektronik</div><div class="cat-pts">+50 poin/kg</div></div>
+              <div class="cat-btn" onclick="selectCategory(this,'Campuran')"><span class="cat-icon">♻️</span><div class="cat-name">Campuran</div><div class="cat-pts">+12 poin/kg</div></div>
+              <div class="cat-btn" onclick="selectCategory(this,'B3')"><span class="cat-icon">⚠️</span><div class="cat-name">B3 (Berbahaya)</div><div class="cat-pts">+60 poin/kg</div></div>
+            </div>
+            <label>Estimasi Berat (kg)</label>
+            <input type="text" id="pu-weight" placeholder="contoh: 5.0" style="max-width:200px">
+            <label>Catatan Tambahan</label>
+            <textarea placeholder="Contoh: Ada 2 karung plastik dan 1 dus kardus..." style="height:80px;resize:none"></textarea>
+            <label>Upload Foto Sampah</label>
+            <div class="upload-area" onclick="showToast('Foto berhasil diunggah! ✅')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+              <p style="font-size:0.85rem;color:var(--text-muted)">Wajib upload foto sampah untuk pickup</p>
+            </div>
+            <button class="btn btn-primary" style="width:auto;margin-top:1rem" onclick="doStep('pu',2)">Lanjut Pilih Jadwal & Lokasi →</button>
+          </div>
+        </div>
+
+        <div id="pu-s2" style="display:none">
+          <div class="card">
+            <div class="card-title">Jadwal & Lokasi Penjemputan</div>
+            <label>Alamat Penjemputan</label>
+            <input type="text" id="pu-addr" placeholder="Jl. Contoh No. 1, Surabaya" value="Jl. Raya Darmo No. 25, Surabaya">
+            <label>Titik Patokan</label>
+            <input type="text" placeholder="Dekat warung Pak Budi / depan sekolah">
+            <label>Tanggal Penjemputan</label>
+            <select id="pu-date"></select>
+            <label>Waktu Penjemputan</label>
+            <select id="pu-time">
+              <option>07:00 - 09:00</option>
+              <option>09:00 - 11:00</option>
+              <option>13:00 - 15:00</option>
+              <option>15:00 - 17:00</option>
+            </select>
+            <div style="display:flex;gap:1rem;margin-top:1rem">
+              <button class="btn btn-outline" style="width:auto" onclick="doStep('pu',1)">← Kembali</button>
+              <button class="btn btn-primary" style="width:auto" onclick="doStep('pu',3)">Konfirmasi Pesanan →</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pu-s3" style="display:none">
+          <div class="card">
+            <div class="card-title">Konfirmasi Pesanan Jemput</div>
+            <div id="pu-confirm-detail" style="background:var(--bg);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;font-size:0.9rem;line-height:2"></div>
+            <div style="background:var(--green-light);border-radius:10px;padding:1rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px">
+              <span style="font-size:1.5rem">🚛</span>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green-dark)">Petugas akan datang sesuai jadwal</div>
+                <div style="font-size:0.8rem;color:var(--green)">Siapkan sampah sebelum petugas tiba</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem">
+              <button class="btn btn-outline" style="width:auto" onclick="doStep('pu',2)">← Kembali</button>
+              <button class="btn btn-primary" style="width:auto" onclick="submitPickup()">Pesan Sekarang →</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pu-s4" style="display:none">
+          <div class="card" style="text-align:center">
+            <div style="font-size:4rem;margin-bottom:1rem">✅</div>
+            <h2 style="font-family:'Syne',sans-serif;margin-bottom:0.5rem">Pesanan Berhasil!</h2>
+            <p style="color:var(--text-muted);margin-bottom:1.5rem">Nomor Pesanan: <b id="pu-order-num">ECO-PU-2025-3847</b></p>
+            <div class="qr-box" id="qr-pickup"></div>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.5rem">QR Code ini akan di-scan petugas saat tiba di lokasi</p>
+            <div style="background:var(--blue-light);border-radius:10px;padding:1rem;text-align:left;margin-bottom:1.5rem">
+              <b style="color:var(--blue);font-size:0.85rem">📍 Status Pesanan</b>
+              <div style="margin-top:8px;font-size:0.85rem">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="color:var(--green)">●</span> Pesanan diterima sistem</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--text-muted)"><span>○</span> Mencari petugas terdekat...</div>
+                <div style="display:flex;align-items:center;gap:8px;color:var(--text-muted)"><span>○</span> Petugas dalam perjalanan</div>
+              </div>
+            </div>
+            <button id="btn-scan-pickup" class="btn btn-primary" style="width:auto" onclick="simulateScan('pickup')">🔍 Simulasi Scan Petugas</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── REWARD ── -->
+      <section id="sec-reward" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Reward & Poin</h1>
+          <p>Tukarkan poin kamu dengan hadiah menarik</p>
+        </div>
+
+        <div class="card" style="background:linear-gradient(135deg,var(--green-dark),var(--green));border:none;color:white">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:0.8rem;opacity:0.75;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">Poin Kamu</div>
+              <div style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800" id="rew-pts-display">1.250</div>
+              <div style="font-size:0.8rem;opacity:0.7;margin-top:4px">⭐ Eco Starter Level</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.8rem;opacity:0.75;margin-bottom:4px">Total Ditukar</div>
+              <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700" id="rew-redeemed">350</div>
+              <div style="font-size:0.75rem;opacity:0.6">poin sepanjang waktu</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Pilih Reward</div>
+          <div id="reward-list"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem" id="reward-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Riwayat Penukaran</div>
+          <table>
+            <thead><tr><th>Tanggal</th><th>Reward</th><th>Poin Dipakai</th><th>Kode Voucher</th><th>Status</th></tr></thead>
+            <tbody id="redeem-history"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── PETA ── -->
+      <section id="sec-map" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Peta Bank Sampah</h1>
+          <p>Temukan bank sampah terdekat di sekitarmu</p>
+        </div>
+        <div class="card">
+          <div class="map-mock" id="bank-map">
+            <div style="position:absolute;inset:0;background:linear-gradient(135deg,#c8e6c9,#a5d6a7,#e8f5e9);opacity:0.6"></div>
+            <div style="position:absolute;inset:0" id="map-pins"></div>
+            <div style="position:relative;z-index:1;background:rgba(255,255,255,0.85);padding:8px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;color:var(--green-dark)">🗺️ Peta Surabaya (Simulasi)</div>
+          </div>
+        </div>
+        <div class="grid-2" id="bank-list"></div>
+      </section>
+
+      <!-- ── HISTORY ── -->
+      <section id="sec-history" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Riwayat Transaksi</h1>
+          <p>Semua riwayat transaksi kamu</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="btn btn-sm btn-primary"  onclick="filterHistory('semua',this)">Semua</button>
+          <button class="btn btn-sm btn-outline"  onclick="filterHistory('dropoff',this)">Drop-off Sampah</button>
+          <button class="btn btn-sm btn-outline"  onclick="filterHistory('pickup',this)">Jemput Sampah</button>
+        </div>
+
+        <!-- TAB: SEMUA -->
+        <div id="hist-semua" class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu / Jadwal</th>
+                <th>Jenis</th>
+                <th>Kategori</th>
+                <th>Berat</th>
+                <th>Poin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hist-table-semua"></tbody>
+          </table>
+        </div>
+
+        <!-- TAB: DROP-OFF -->
+        <div id="hist-dropoff" class="card" style="display:none">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal & Jam Drop-off</th>
+                <th>Kategori</th>
+                <th>Berat</th>
+                <th>Poin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hist-table-dropoff"></tbody>
+          </table>
+        </div>
+
+        <!-- TAB: JEMPUT SAMPAH -->
+        <div id="hist-pickup" class="card" style="display:none">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal Dibuat</th>
+                <th>Jadwal Jemput</th>
+                <th>Kategori</th>
+                <th>Berat</th>
+                <th>Poin</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hist-table-pickup"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── EDUKASI ── -->
+      <section id="sec-edukasi" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Edukasi Sampah</h1>
+          <p>Pelajari cara pengelolaan sampah yang benar</p>
+        </div>
+        <div class="grid-3" style="margin-bottom:1.5rem">
+          <div style="background:var(--green-light);border-radius:var(--radius);padding:1.5rem;text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:8px">♻️</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green-dark)">Daur Ulang</div>
+            <div style="font-size:0.8rem;color:var(--green);margin-top:4px">Reduce • Reuse • Recycle</div>
+          </div>
+          <div style="background:var(--blue-light);border-radius:var(--radius);padding:1.5rem;text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:8px">🌍</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--blue)">Lingkungan</div>
+            <div style="font-size:0.8rem;color:var(--blue);margin-top:4px">Jaga Bumi Kita</div>
+          </div>
+          <div style="background:var(--amber-light);border-radius:var(--radius);padding:1.5rem;text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:8px">💡</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--amber)">Tips & Trik</div>
+            <div style="font-size:0.8rem;color:var(--amber);margin-top:4px">Cara Bijak Kelola Sampah</div>
+          </div>
+        </div>
+        <div id="edu-content"></div>
+      </section>
+
+      <!-- ── PROFIL ── -->
+      <section id="sec-profile" style="display:none" class="fade-in">
+        <div class="page-header">
+          <h1>Profil & Settings</h1>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Informasi Pengguna</div>
+            <div style="text-align:center;margin-bottom:1.5rem">
+              <div style="width:80px;height:80px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--green-dark);margin:0 auto 0.8rem" id="prof-avatar">B</div>
+              <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700" id="prof-name">Budi Santoso</div>
+              <div style="font-size:0.8rem;color:var(--green)">⭐ Eco Starter</div>
+            </div>
+            <label>Nama Lengkap</label>
+            <input type="text" id="prof-name-inp" value="Budi Santoso">
+            <label>Email</label>
+            <input type="email" id="prof-email-inp" value="user@smartwaste.id">
+            <label>Nomor HP</label>
+            <input type="tel" id="prof-phone-inp" value="0812-3456-7890">
+            <label>Alamat</label>
+            <textarea style="height:70px;resize:none">Jl. Raya Darmo No. 25, Surabaya</textarea>
+            <button class="btn btn-primary" style="width:auto" onclick="saveProfile()">Simpan Perubahan</button>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">Pengaturan Notifikasi</div>
+              <div style="display:flex;flex-direction:column;gap:0.8rem;font-size:0.88rem">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span>Notifikasi Pickup</span>
+                  <label style="position:relative;display:inline-block;width:44px;height:22px;margin:0">
+                    <input type="checkbox" checked style="opacity:0;width:0;height:0">
+                    <span style="position:absolute;inset:0;background:var(--green);border-radius:22px;cursor:pointer"></span>
+                  </label>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span>Notifikasi Poin Masuk</span>
+                  <label style="position:relative;display:inline-block;width:44px;height:22px;margin:0">
+                    <input type="checkbox" checked style="opacity:0;width:0;height:0">
+                    <span style="position:absolute;inset:0;background:var(--green);border-radius:22px;cursor:pointer"></span>
+                  </label>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span>Newsletter Edukasi</span>
+                  <label style="position:relative;display:inline-block;width:44px;height:22px;margin:0">
+                    <input type="checkbox" style="opacity:0;width:0;height:0">
+                    <span style="position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Keamanan Akun</div>
+              <label>Password Lama</label>
+              <input type="password" id="pass-old" placeholder="Masukkan password lama">
+              <label>Password Baru</label>
+              <input type="password" id="pass-new" placeholder="Min. 6 karakter">
+              <label>Konfirmasi Password Baru</label>
+              <input type="password" id="pass-confirm" placeholder="Ulangi password baru">
+              <button class="btn btn-outline" style="width:auto" onclick="doChangePassword()">🔒 Ganti Password</button>
+            </div>
+            <div class="card">
+              <div class="card-title">Kode Referral Saya</div>
+              <div style="background:var(--green-light);border-radius:10px;padding:1rem;text-align:center">
+                <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--green-dark);letter-spacing:0.1em" id="referral-code">BUDI-2025</div>
+                <div style="font-size:0.78rem;color:var(--green);margin-top:4px">Ajak teman & dapatkan 100 poin per referral!</div>
+              </div>
+              <button class="btn btn-outline" style="width:auto;margin-top:0.8rem" onclick="showToast('Kode referral disalin! 📋')">Salin Kode</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="page" id="page-admin">
+  <div class="app-shell">
+    <aside class="sidebar" style="background:#2C2C2A">
+       <div class="sidebar-brand" style="border-color:rgba(255,200,0,0.2);font-size:1.09rem;line-height:1.3;word-break:break-word;white-space:normal">Smart Waste <span style="color:#FAC775">Management</span> <span style="font-size:0.8rem;color:#888;font-weight:400;display:block">ADMIN PANEL</span></div>
+      <nav>
+        <div class="nav-item active" style="color:rgba(255,255,255,0.9)" onclick="showAdminSection('adm-overview',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Overview
+        </div>
+        <div class="nav-item" style="color:rgba(255,255,255,0.55)" onclick="showAdminSection('adm-users',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Kelola Pengguna
+        </div>
+        <div class="nav-item" style="color:rgba(255,255,255,0.55)" onclick="showAdminSection('adm-trx',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Pantau Transaksi
+        </div>
+        <div class="nav-item" style="color:rgba(255,255,255,0.55)" onclick="showAdminSection('adm-rewards',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Kelola Reward
+        </div>
+        <div class="nav-item" style="color:rgba(255,255,255,0.55)" onclick="showAdminSection('adm-lb',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Leaderboard
+        </div>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;margin-top:1rem" onclick="doLogout()">← Keluar Admin</button>
+    </aside>
+
+    <main class="main">
+
+      <!-- ADMIN OVERVIEW -->
+      <section id="adm-overview" class="fade-in">
+        <div class="page-header"><h1>Admin Dashboard</h1><p>Ringkasan sistem Smart Waste Management</p></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="icon-wrap" style="background:var(--green-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="val" id="ov-total-users">0</div><div class="lbl">Total Pengguna</div></div>
+          <div class="stat-card"><div class="icon-wrap" style="background:var(--blue-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="val" id="ov-total-transactions">0</div><div class="lbl">Total Transaksi</div></div>
+          <div class="stat-card"><div class="icon-wrap" style="background:var(--amber-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="val" id="ov-total-points">0</div><div class="lbl">Total Poin Beredar</div></div>
+          <div class="stat-card"><div class="icon-wrap" style="background:var(--green-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div><div class="val" id="ov-total-weight">0 kg</div><div class="lbl">Sampah Dikelola</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Transaksi Hari Ini</div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg);border-radius:8px">
+                <span style="font-size:0.85rem">Drop-off berhasil</span><span class="badge badge-green">32</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg);border-radius:8px">
+                <span style="font-size:0.85rem">Pickup selesai</span><span class="badge badge-blue">18</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg);border-radius:8px">
+                <span style="font-size:0.85rem">Pickup pending</span><span class="badge badge-amber">7</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px;background:var(--bg);border-radius:8px">
+                <span style="font-size:0.85rem">Reward ditukarkan</span><span class="badge badge-coral">12</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Komposisi Sampah (Bulan Ini)</div>
+            <div style="display:flex;flex-direction:column;gap:0.6rem">
+              <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Plastik</span><span>42%</span></div><div class="progress-bar"><div class="progress-fill" style="width:42%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Kertas</span><span>28%</span></div><div class="progress-bar"><div class="progress-fill" style="width:28%;background:var(--blue)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Logam</span><span>15%</span></div><div class="progress-bar"><div class="progress-fill" style="width:15%;background:var(--amber)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Lainnya</span><span>15%</span></div><div class="progress-bar"><div class="progress-fill" style="width:15%;background:var(--coral)"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADMIN USERS -->
+      <section id="adm-users" style="display:none" class="fade-in">
+        <div class="page-header"><h1>Kelola Pengguna</h1></div>
+        <div style="display:flex;gap:1rem;margin-bottom:1.2rem">
+          <input type="text" placeholder="Cari nama / email..." style="max-width:300px;margin:0">
+          <button class="btn btn-primary btn-sm" style="width:auto">Cari</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Nama</th><th>Email</th><th>Poin</th><th>Transaksi</th><th>Level</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="admin-users-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ADMIN TRX -->
+      <section id="adm-trx" style="display:none" class="fade-in">
+        <div class="page-header"><h1>Pantau Transaksi</h1></div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Pengguna</th>
+                <th>Jenis</th>
+                <th>Kategori</th>
+                <th>Berat</th>
+                <th>Poin</th>
+                <th>Tanggal / Jadwal</th>
+                <th>Status</th>
+                <th>Ubah Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-trx-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ADMIN REWARDS -->
+      <section id="adm-rewards" style="display:none" class="fade-in">
+        <div class="page-header"><h1>Kelola Reward</h1>
+          <button class="btn btn-primary btn-sm" style="width:auto;margin-top:0.5rem" onclick="document.getElementById('add-reward-modal').classList.add('show')">+ Tambah Reward Baru</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Reward</th><th>Poin</th><th>Stok</th><th>Ditukar</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="admin-rewards-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ADMIN LEADERBOARD -->
+      <section id="adm-lb" style="display:none" class="fade-in">
+        <div class="page-header"><h1>Leaderboard</h1><p>Pengguna dengan poin terbanyak</p></div>
+        <div class="card">
+          <div id="lb-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="add-reward-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('add-reward-modal').classList.remove('show')">✕</button>
+    <h3>Tambah Reward Baru</h3>
+    <label>Nama Reward</label>
+    <input type="text" id="new-reward-title" placeholder="Voucher Indomaret 20rb">
+    <label>Deskripsi</label>
+    <input type="text" id="new-reward-desc" placeholder="Belanja di Indomaret senilai Rp 20.000">
+    <label>Icon (emoji)</label>
+    <input type="text" id="new-reward-icon" placeholder="🛒" style="max-width:80px">
+    <label>Kategori</label>
+    <select id="new-reward-cat">
+      <option>Voucher Belanja</option>
+      <option>Voucher Makanan</option>
+      <option>E-Wallet</option>
+      <option>Pulsa</option>
+      <option>Barang Fisik</option>
+    </select>
+    <label>Poin Diperlukan</label>
+    <input type="number" id="new-reward-pts" placeholder="500" min="1">
+    <label>Stok</label>
+    <input type="number" id="new-reward-stock" placeholder="100" min="0">
+    <button class="btn btn-primary" onclick="adminAddReward()">Simpan Reward</button>
+  </div>
+</div>
+
+<div class="overlay" id="redeem-modal">
+  <div class="modal" style="text-align:center">
+    <button class="modal-close" onclick="document.getElementById('redeem-modal').classList.remove('show')">✕</button>
+    <div style="font-size:3rem;margin-bottom:0.5rem" id="redeem-modal-icon">🎁</div>
+    <h3 id="redeem-modal-title">Tukar Voucher</h3>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin:0.5rem 0 1rem" id="redeem-modal-desc">Kamu yakin ingin menukar reward ini?</p>
+    <div style="background:var(--amber-light);border-radius:10px;padding:0.8rem;margin-bottom:1.2rem">
+      <span style="color:var(--amber);font-weight:700;font-size:1.1rem" id="redeem-modal-pts">500 Poin</span> akan dikurangi dari akun kamu
+    </div>
+    <div style="display:flex;gap:0.8rem">
+      <button class="btn btn-outline" style="width:auto;flex:1" onclick="document.getElementById('redeem-modal').classList.remove('show')">Batal</button>
+      <button class="btn btn-primary" style="flex:1" onclick="doRedeem()">Tukar Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════════════════
+let appData = {
+  user: { name: '', email: '', phone: '', points: 0, redeemed: 0, transactions: 0, kg: 0, rank: '-', referral: '' },
+  selectedCategory: '',
+  selectedCategoryPts: 0,
+  currentRedeemReward: null,
+  dropoffStep: 1,
+  pickupStep: 1,
+  history: [],
+  rewards: [
+    { icon: '🛒', name: 'Voucher Indomaret 20rb', pts: 200, stock: 48, redeemed: 52, cat: 'Belanja' },
+    { icon: '🍔', name: 'Voucher McD Happy Meal', pts: 350, stock: 30, redeemed: 20, cat: 'Makanan' },
+    { icon: '💚', name: 'GoPay Cashback 15rb', pts: 150, stock: 100, redeemed: 89, cat: 'E-Wallet' },
+    { icon: '☕', name: 'Kopi Kenangan 1 Cup', pts: 250, stock: 60, redeemed: 40, cat: 'Makanan' },
+    { icon: '🛍️', name: 'Shopee Voucher 25rb', pts: 400, stock: 25, redeemed: 15, cat: 'Belanja' },
+    { icon: '📱', name: 'Pulsa 10rb', pts: 100, stock: 200, redeemed: 180, cat: 'Pulsa' },
+  ],
+  redeemHistory: [],
+  eduContent: [
+    { icon: '🗑️', title: 'Pentingnya Pengelolaan Sampah', body: 'Indonesia menghasilkan lebih dari 68 juta ton sampah per tahun. Hanya 37,66% yang berhasil dikelola dengan baik. Pengelolaan sampah yang buruk menyebabkan pencemaran tanah, air, dan udara. Dengan memilah sampah sejak dari rumah, kita membantu proses daur ulang menjadi lebih efisien dan mengurangi beban TPA (Tempat Pembuangan Akhir).' },
+    { icon: '📋', title: 'Jenis-jenis Sampah', body: '<b>Sampah Organik:</b> Sisa makanan, sayuran, buah-buahan → bisa dijadikan kompos.<br><b>Sampah Anorganik:</b> Plastik, kertas, logam, kaca → bisa didaur ulang.<br><b>Sampah B3 (Bahan Berbahaya & Beracun):</b> Baterai, obat kadaluarsa, cat, lampu neon → harus dibuang ke tempat khusus.<br><b>Sampah Elektronik (E-waste):</b> HP, laptop, kabel, charger → jangan dibuang sembarangan!' },
+    { icon: '♻️', title: 'Cara Pengelolaan Sampah yang Benar', body: '<b>Reduce</b> — Kurangi penggunaan barang sekali pakai. Bawa tas belanja sendiri, gunakan botol minum isi ulang.<br><b>Reuse</b> — Gunakan kembali barang yang masih bisa dipakai. Kardus bisa jadi tempat penyimpanan.<br><b>Recycle</b> — Pilah sampah dan setor ke bank sampah. Sampah plastik, kertas, dan logam bisa didaur ulang menjadi produk baru.' },
+    { icon: '🏦', title: 'Program Daur Ulang & Bank Sampah', body: 'Bank sampah adalah tempat menabung sampah yang dapat menghasilkan uang atau poin. Kamu bisa menyetorkan sampah yang sudah dipilah dan mendapatkan nilai ekonomis. Smart Waste Management bekerja sama dengan bank sampah di Surabaya untuk memudahkan proses setor sampah dan memberikan reward berupa poin yang bisa ditukar hadiah.' },
+    { icon: '❓', title: 'FAQ Sampah', body: '<b>Q: Berapa poin yang saya dapat per kg plastik?</b><br>A: 20 poin per kg plastik yang berhasil divalidasi.<br><br><b>Q: Bagaimana cara menukar poin?</b><br>A: Masuk ke menu Reward, pilih hadiah, dan konfirmasi penukaran.<br><br><b>Q: Apakah semua jenis sampah diterima?</b><br>A: Ya, kami menerima plastik, kertas, logam, kaca, elektronik, dan B3. Masing-masing memiliki nilai poin berbeda.' },
+  ],
+  banks: [
+    { name: 'Bank Sampah Induk Surabaya', addr: 'Jl. Kertajaya No. 45', hours: '08:00 - 16:00', top: '25%', left: '40%' },
+    { name: 'Bank Sampah Bersih Jaya', addr: 'Jl. Diponegoro No. 12', hours: '07:00 - 15:00', top: '50%', left: '60%' },
+    { name: 'Bank Sampah Hijau Lestari', addr: 'Jl. Rungkut Industri No. 8', hours: '08:00 - 17:00', top: '70%', left: '75%' },
+    { name: 'Bank Sampah Mandiri', addr: 'Jl. Pemuda No. 67', hours: '09:00 - 14:00', top: '40%', left: '25%' },
+  ],
+};
+
+// ═══════════════════════════════════════════════════
+// PAGE ROUTING
+// ═══════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'page-admin') initAdmin();
+}
+
+function showSection(id, el) {
+  document.querySelectorAll('#page-app main section').forEach(s => s.style.display='none');
+  const sec = document.getElementById(id);
+  sec.style.display = 'block';
+  sec.classList.add('fade-in');
+  if(el) {
+    document.querySelectorAll('.sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+    el.classList.add('active');
+  }
+  if(id==='sec-history') { loadTransactions(); filterHistory('semua', document.querySelector('#sec-history .btn')); }
+  if(id==='sec-map') renderMap();
+  if(id==='sec-edukasi') renderEdukasi();
+}
+
+function showAdminSection(id, el) {
+  document.querySelectorAll('#page-admin main section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+  if(el) {
+    document.querySelectorAll('#page-admin .nav-item').forEach(n=>{ n.classList.remove('active'); n.style.color='rgba(255,255,255,0.55)'; });
+    el.classList.add('active');
+    el.style.color='rgba(255,255,255,0.9)';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+function doLogin() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-pass").value;
+  if (!email || !password) { showToast('Lengkapi email dan password!'); return; }
+
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("password", password);
+
+  fetch("api/login.php", { method: "POST", body: formData })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        if (data.role === "admin") {
+          showPage('page-admin');
+        } else {
+          showPage('page-app');
+          loadDashboard();
+          loadRewards();
+        }
+      } else {
+        showToast('Email atau password salah ❌');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      showToast('Terjadi error, coba lagi');
+    });
+}
+
+function doAdminLogin() {
+  const email    = document.getElementById("admin-login-email").value.trim();
+  const password = document.getElementById("admin-login-pass").value;
+  if (!email || !password) { showToast('Lengkapi email dan password!'); return; }
+
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("password", password);
+
+  fetch("api/login.php", { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "success") {
+        if (data.role === "admin") {
+          showPage('page-admin');
+        } else {
+          // Berhasil login tapi bukan admin
+          showToast('Akun ini bukan administrator ❌');
+          // Langsung logout supaya session tidak menggantung
+          fetch("api/logout.php");
+        }
+      } else {
+        showToast('Email atau password salah ❌');
+      }
+    })
+    .catch(() => showToast('Terjadi error, coba lagi'));
+}
+
+function showRegStep2() {
+  const name = document.getElementById('reg-name').value;
+  if(!name) { showToast('Lengkapi data diri kamu dulu!'); return; }
+  document.getElementById('reg-step1').style.display='none';
+  document.getElementById('reg-step2').style.display='block';
+}
+
+function otpMove(el, idx) {
+  if(el.value.length===1 && idx<3) {
+    document.querySelectorAll('.otp-input')[idx+1].focus();
+  }
+}
+
+// ── Helper: label tanggal & jam aktual ──────────────
+function getNowLabel() {
+  const hari  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return `${hari[d.getDay()]}, ${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()} — ${hh}:${mm}`;
+}
+
+function doRegister() {
+  const name     = document.getElementById("reg-name").value.trim();
+  const email    = document.getElementById("reg-email").value.trim();
+  const phone    = document.getElementById("reg-phone").value.trim();
+  const password = document.getElementById("reg-pass").value;
+  if (!name || !email || !password) { showToast('Lengkapi semua data!'); return; }
+
+  const otp = Array.from(document.querySelectorAll('.otp-input')).map(i=>i.value).join('');
+  if (otp !== '1234') { showToast('Kode OTP salah ❌'); return; }
+
+  const formData = new FormData();
+  formData.append("name",     name);
+  formData.append("email",    email);
+  formData.append("phone",    phone);
+  formData.append("password", password);
+
+  fetch("api/register.php", { method: "POST", body: formData })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        showToast('Registrasi berhasil! Selamat datang 🎉');
+        // Auto-login: langsung masuk app
+        setTimeout(() => {
+          showPage('page-app');
+          loadDashboard();
+          loadRewards();
+        }, 1200);
+      } else if (data.status === "email_exists") {
+        showToast('Email sudah digunakan, coba email lain ❌');
+      } else if (data.status === "invalid_email") {
+        showToast('Format email tidak valid ❌');
+      } else {
+        showToast('Registrasi gagal: ' + (data.message || data.status));
+      }
+    })
+    .catch(err => {
+      console.error('doRegister error:', err);
+      showToast('Terjadi error, coba lagi');
+    });
+}
+
+function doChangePassword() {
+  const oldPass  = document.getElementById('pass-old').value;
+  const newPass  = document.getElementById('pass-new').value;
+  const confirm  = document.getElementById('pass-confirm').value;
+
+  if (!oldPass || !newPass || !confirm) { showToast('Lengkapi semua field password!'); return; }
+  if (newPass.length < 6)               { showToast('Password baru minimal 6 karakter!'); return; }
+  if (newPass !== confirm)              { showToast('Konfirmasi password tidak cocok ❌'); return; }
+
+  const fd = new FormData();
+  fd.append('old_password', oldPass);
+  fd.append('new_password', newPass);
+
+  fetch("api/change_password.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showToast('Password berhasil diubah! 🔒');
+        document.getElementById('pass-old').value     = '';
+        document.getElementById('pass-new').value     = '';
+        document.getElementById('pass-confirm').value = '';
+      } else if (data.status === 'wrong_password') {
+        showToast('Password lama salah ❌');
+      } else if (data.status === 'not_logged_in') {
+        showPage('page-login');
+      } else {
+        showToast('Gagal ganti password: ' + (data.message || data.status));
+      }
+    })
+    .catch(() => showToast('Terjadi error, coba lagi'));
+}
+
+function doLogout() {
+  fetch("api/logout.php")
+    .then(response => response.json())
+    .then(() => {
+      // Reset data lokal
+      appData.user = { name:'', email:'', phone:'', points:0, redeemed:0, transactions:0, kg:0, rank:'-', referral:'' };
+      appData.history = [];
+      appData.rewards = [];
+      appData.redeemHistory = [];
+      // Kembali ke halaman login
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-login').classList.add('active');
+    })
+    .catch(() => {
+      // Tetap logout meskipun request gagal
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-login').classList.add('active');
+    });
+}
+
+// ═══════════════════════════════════════════════════
+// INIT APP & DASHBOARD
+// ═══════════════════════════════════════════════════
+function initApp() {
+  // Render UI dari appData yang sudah ada (dipanggil setelah loadDashboard)
+  const u    = appData.user;
+  const init = u.name ? u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '?';
+
+  // Sidebar
+  document.getElementById('sb-avatar').textContent = init;
+  document.getElementById('sb-name').textContent   = u.name;
+  document.getElementById('sb-pts').textContent    = '⭐ ' + u.points.toLocaleString('id-ID') + ' Poin';
+
+  // Stat cards
+  document.getElementById('stat-pts').textContent  = u.points.toLocaleString('id-ID');
+  document.getElementById('stat-trx').textContent  = u.trxMonth;
+  document.getElementById('stat-kg').textContent   = parseFloat(u.kg).toFixed(1);
+  document.getElementById('stat-rank').textContent = '#' + u.rank;
+
+  // Greeting
+  document.getElementById('greet-text').textContent = 'Halo, ' + u.name.split(' ')[0] + '! Mari setor sampah hari ini 🌿';
+
+  // Progress Level
+  document.getElementById('level-badge').textContent        = u.level;
+  document.getElementById('level-progress-fill').style.width = u.levelPct + '%';
+  document.getElementById('level-pts-current').textContent  = u.points.toLocaleString('id-ID') + ' poin';
+  document.getElementById('level-pts-target').textContent   = u.targetLabel;
+  document.getElementById('level-next-text').textContent    = u.ptsToNext > 0
+    ? u.ptsToNext.toLocaleString('id-ID') + ' poin lagi ke level berikutnya'
+    : '🎉 Level tertinggi tercapai!';
+
+  // Dampak Lingkungan
+  document.getElementById('impact-kg').textContent        = parseFloat(u.kg).toFixed(1);
+  document.getElementById('impact-co2').textContent       = u.co2;
+  document.getElementById('impact-trx-month').textContent = u.trxMonth;
+  document.getElementById('impact-trees').textContent     = u.trees;
+
+  // Reward section header
+  const rewPts = document.getElementById('rew-pts-display');
+  if (rewPts) rewPts.textContent = u.points.toLocaleString('id-ID');
+
+  // Profil
+  document.getElementById('prof-avatar').textContent   = init;
+  document.getElementById('prof-name').textContent     = u.name;
+  document.getElementById('prof-name-inp').value       = u.name;
+  document.getElementById('prof-email-inp').value      = u.email;
+  document.getElementById('prof-phone-inp').value      = u.phone || '';
+  const ref = document.getElementById('referral-code');
+  if (ref) ref.textContent = u.referral || '-';
+
+  renderRecentTrx();
+}
+
+function renderRecentTrx() {
+  const tbody = document.getElementById('recent-trx');
+  if (!tbody) return;
+  if (!appData.history.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem">Belum ada transaksi</td></tr>';
+    return;
+  }
+  tbody.innerHTML = appData.history.slice(0, 5).map(t => `
+    <tr>
+      <td>${t.date}</td>
+      <td><span class="badge ${t.type==='dropoff'?'badge-green':t.type==='pickup'?'badge-blue':'badge-amber'}">${t.type==='dropoff'?'Drop-off':t.type==='pickup'?'Pickup':'Reward'}</span></td>
+      <td>${t.cat}</td>
+      <td>${t.weight && t.weight!=='-' ? parseFloat(t.weight).toFixed(1)+' kg' : '-'}</td>
+      <td style="font-weight:600;color:${parseInt(t.pts)>0?'var(--green)':'var(--coral)'}">
+        ${parseInt(t.pts)>0?'+'+parseInt(t.pts).toLocaleString('id-ID'):parseInt(t.pts).toLocaleString('id-ID')} pts
+      </td>
+      <td><span class="badge ${t.status==='Selesai'?'badge-green':t.status==='Pending'?'badge-amber':'badge-gray'}">${t.status}</span></td>
+    </tr>`).join('');
+}
+
+function loadDashboard() {
+  fetch("api/dashboard.php")
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'not_logged_in') { showPage('page-login'); return; }
+
+      // Simpan ke appData
+      appData.user.name      = data.name;
+      appData.user.email     = data.email;
+      appData.user.phone     = data.phone || '';
+      appData.user.points    = data.points;
+      appData.user.trxMonth  = data.trx_month;
+      appData.user.kg        = data.total_kg;
+      appData.user.rank      = data.rank;
+      appData.user.level     = data.level;
+      appData.user.levelPct  = data.level_pct;
+      appData.user.ptsToNext = data.pts_to_next;
+      appData.user.targetLabel = data.target_label;
+      appData.user.co2       = data.co2;
+      appData.user.trees     = data.trees;
+
+      // Simpan transaksi terbaru
+      appData.history = data.recent_trx.map(t => ({
+        date:   t.date,
+        type:   t.type || 'dropoff',
+        cat:    t.category,
+        weight: t.weight,
+        pts:    t.points,
+        status: t.status,
+      }));
+
+      initApp();
+    })
+    .catch(err => console.error('loadDashboard:', err));
+}
+
+
+function loadTransactions()  {
+  fetch("api/transactions.php")
+    .then(r => r.json())
+    .then(data => {
+      appData.history = data.map(item => ({
+        date:   item.created_at,
+        type:   item.type || 'dropoff',
+        cat:    item.category,
+        weight: item.weight,
+        pts:    parseInt(item.points),
+        status: item.status,
+      }));
+      renderRecentTrx();
+      const historyEl = document.getElementById('hist-table-semua');
+      if (historyEl && historyEl.closest('section') && historyEl.closest('section').style.display !== 'none') renderHistory('semua');
+    })
+    .catch(err => console.error('loadTransactions:', err));
+}
+
+// ═══════════════════════════════════════════════════
+// DROP-OFF / PICKUP STEPS
+// ═══════════════════════════════════════════════════
+let catPtsMap = { Plastik:20, Kertas:15, Logam:30, Elektronik:50, Organik:10, Kaca:25, Campuran:12, B3:60 };
+
+function selectCategory(el, name) {
+  el.closest('.category-grid').querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  appData.selectedCategory = name;
+  appData.selectedCategoryPts = catPtsMap[name] || 20;
+}
+
+function doStep(prefix, step) {
+  const totalSteps = 4;
+  if(prefix==='do' && step===3) {
+    const cat = appData.selectedCategory || 'Plastik';
+    const w   = parseFloat(document.getElementById('do-weight').value) || 2;
+    const pts = Math.round(w * (catPtsMap[cat]||20));
+    const now = getNowLabel();
+    document.getElementById('do-confirm-detail').innerHTML = `
+      <b>Kategori:</b> ${cat}<br>
+      <b>Berat:</b> ${w} kg<br>
+      <b>Bank Sampah:</b> ${document.getElementById('do-bank').value.split('—')[0].trim()}<br>
+      <b>Waktu:</b> ${now}`;
+    document.getElementById('do-pts-preview').textContent = '+'+pts+' Poin';
+  }
+  if(prefix==='pu' && step===3) {
+    const cat = appData.selectedCategory || 'Plastik';
+    const w = parseFloat(document.getElementById('pu-weight').value) || 3;
+    document.getElementById('pu-confirm-detail').innerHTML = `
+      <b>Kategori:</b> ${cat}<br>
+      <b>Berat Estimasi:</b> ${w} kg<br>
+      <b>Alamat:</b> ${document.getElementById('pu-addr').value}<br>
+      <b>Tanggal:</b> ${document.getElementById('pu-date').value}<br>
+      <b>Waktu:</b> ${document.getElementById('pu-time').value}`;
+  }
+
+  if(step === 1) {
+    const btnDo = document.getElementById('btn-scan-dropoff');
+    const btnPu = document.getElementById('btn-scan-pickup');
+    if(btnDo) { btnDo.disabled=false; btnDo.textContent='🔍 Simulasi Scan oleh Petugas'; btnDo.style.opacity='1'; }
+    if(btnPu) { btnPu.disabled=false; btnPu.textContent='🔍 Simulasi Scan Petugas';     btnPu.style.opacity='1'; }
+    appData.currentTrxId      = null;
+    appData.currentTrxPts     = 0;
+    appData.currentTrxScanned = false;
+    appData.selectedCategory  = '';
+  }
+  for(let i=1;i<=totalSteps;i++) {
+    const s = document.getElementById(prefix+'-s'+i);
+    if(s) s.style.display = i===step?'block':'none';
+    const dot = document.getElementById(prefix+'-step-'+i);
+    if(dot) { dot.className='step-dot'; if(i<step) dot.classList.add('done'); if(i===step) dot.classList.add('active'); }
+    const line = document.getElementById(prefix+'-line-'+i);
+    if(line) { line.className='step-line'; if(i<step) line.classList.add('done'); }
+  }
+}
+
+function submitDropoff() {
+  const category = appData.selectedCategory || 'Plastik';
+  const weight   = document.getElementById("do-weight").value;
+  if (!weight || parseFloat(weight) <= 0) { showToast('Masukkan estimasi berat sampah!'); return; }
+
+  const formData = new FormData();
+  formData.append("category", category);
+  formData.append("weight",   weight);
+
+  fetch("api/dropoff.php", { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "success") {
+        appData.currentTrxId    = data.trx_id;
+        appData.currentTrxPts   = data.points;
+        appData.currentTrxScanned = false;
+        doStep('do', 4);
+        generateQR('qr-display', data.qr_code);
+        showToast('Transaksi dibuat! Tunjukkan QR ke petugas 🎉');
+      } else if (data.status === "not_logged_in") {
+        showToast('Sesi habis, silakan login ulang');
+        showPage('page-login');
+      } else {
+        showToast('Gagal menyimpan transaksi ❌');
+      }
+    })
+    .catch(() => showToast('Terjadi error, coba lagi'));
+}
+
+function submitPickup() {
+  const category   = appData.selectedCategory || 'Plastik';
+  const weight     = document.getElementById("pu-weight").value;
+  const address    = document.getElementById("pu-addr").value;
+  const pickupDate = document.getElementById("pu-date").value;
+  const pickupTime = document.getElementById("pu-time").value;
+  if (!weight || parseFloat(weight) <= 0) { showToast('Masukkan estimasi berat sampah!'); return; }
+
+  const formData = new FormData();
+  formData.append("category",    category);
+  formData.append("weight",      weight);
+  formData.append("address",     address);
+  formData.append("pickup_date", pickupDate);
+  formData.append("pickup_time", pickupTime);
+
+  fetch("api/pickup.php", { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "success") {
+        appData.currentTrxId      = data.trx_id;
+        appData.currentTrxPts     = data.points;
+        appData.currentTrxScanned = false;
+        const num = data.qr_code;
+        document.getElementById('pu-order-num').textContent = num;
+        doStep('pu', 4);
+        generateQR('qr-pickup', num);
+        showToast('Pesanan jemput dibuat! ✅');
+      } else if (data.status === "not_logged_in") {
+        showPage('page-login');
+      } else {
+        showToast('Gagal membuat pesanan: ' + (data.message || data.status) + ' ❌');
+      }
+    })
+    .catch(() => showToast('Terjadi error, coba lagi'));
+}
+
+// ═══════════════════════════════════════════════════
+// QR CODE GENERATOR (visual pattern)
+// ═══════════════════════════════════════════════════
+function generateQR(containerId, code) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  const cells = 10;
+  const colors = ['#085041','#1D9E75','#085041','#085041','#1D9E75','#E1F5EE','#085041','#E1F5EE','#1D9E75','#085041'];
+  let html = '<div class="qr-pattern">';
+  for(let i=0;i<cells*cells;i++) {
+    const seed = (i * 7 + code.charCodeAt(i % code.length)) % colors.length;
+    const isCorner = (i<3&&(i%cells<3)) || (i>=cells*(cells-3)&&(i%cells<3)) || (i%cells>=cells-3&&i<3*cells);
+    html += `<div class="qr-cell" style="background:${isCorner?'#085041':colors[seed]}"></div>`;
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  if(document.getElementById('qr-code-text')) document.getElementById('qr-code-text').textContent = code;
+}
+
+function simulateScan(type) {
+  // Cari tombol dan disable segera untuk cegah double-click
+  const btnId = type === 'dropoff' ? 'btn-scan-dropoff' : 'btn-scan-pickup';
+  const btn   = document.getElementById(btnId);
+  if (btn) {
+    if (btn.disabled) return; 
+    btn.disabled = true;
+    btn.textContent = '⏳ Memproses...';
+    btn.style.opacity = '0.6';
+  }
+
+  const trxId = appData.currentTrxId;
+  if (!trxId) {
+    showToast('Tidak ada transaksi aktif ❌');
+    if (btn) { btn.disabled = false; btn.textContent = type==='dropoff' ? '🔍 Simulasi Scan oleh Petugas' : '🔍 Simulasi Scan Petugas'; btn.style.opacity='1'; }
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("trx_id", trxId);
+
+  fetch("api/scan.php", { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success' || data.status === 'already_scanned') {
+        const earned = data.points_earned || appData.currentTrxPts || 0;
+        const newPts = data.new_points;
+
+        // Update UI dengan poin real dari server
+        appData.user.points = newPts;
+        document.getElementById('sb-pts').textContent  = '⭐ ' + newPts.toLocaleString('id-ID') + ' Poin';
+        document.getElementById('stat-pts').textContent = newPts.toLocaleString('id-ID');
+        const rewEl = document.getElementById('rew-pts-display');
+        if (rewEl) rewEl.textContent = newPts.toLocaleString('id-ID');
+
+        if (data.status === 'already_scanned') {
+          showToast('⚠️ QR ini sudah pernah di-scan sebelumnya.');
+        } else {
+          showToast('✅ Scan berhasil! +' + earned.toLocaleString('id-ID') + ' poin masuk ke akunmu!');
+        }
+
+        // Tombol tetap disabled & ganti teks
+        if (btn) { btn.textContent = '✅ Sudah Di-scan'; }
+
+        // Reset state transaksi
+        appData.currentTrxId      = null;
+        appData.currentTrxPts     = 0;
+        appData.currentTrxScanned = true;
+
+        // Kembali ke dashboard setelah 2.5 detik & refresh data
+        setTimeout(() => {
+          if (type === 'dropoff') doStep('do', 1);
+          else doStep('pu', 1);
+          showSection('sec-dashboard', null);
+          loadDashboard();
+        }, 2500);
+
+      } else if (data.status === 'not_logged_in') {
+        showPage('page-login');
+      } else {
+        showToast('Gagal scan, coba lagi ❌');
+        if (btn) { btn.disabled=false; btn.textContent=type==='dropoff'?'🔍 Simulasi Scan oleh Petugas':'🔍 Simulasi Scan Petugas'; btn.style.opacity='1'; }
+      }
+    })
+    .catch(() => {
+      showToast('Terjadi error ❌');
+      if (btn) { btn.disabled=false; btn.textContent=type==='dropoff'?'🔍 Simulasi Scan oleh Petugas':'🔍 Simulasi Scan Petugas'; btn.style.opacity='1'; }
+    });
+}
+
+// ═══════════════════════════════════════════════════
+// REWARDS
+// ═══════════════════════════════════════════════════
+function loadRewards() {
+  fetch("api/rewards.php")
+    .then(r => r.json())
+    .then(data => {
+      appData.rewards = data.map(r => ({
+        id:   r.id,
+        icon: r.icon,
+        name: r.title,
+        desc: r.description,
+        pts:  parseInt(r.points_required),
+        stock: parseInt(r.stock),
+        redeemed: parseInt(r.total_redeemed),
+        cat:  r.category,
+        can:  r.can_redeem,
+        color: r.color,
+      }));
+
+      const bgColors = [
+        'var(--green-light)','var(--amber-light)','var(--blue-light)',
+        'var(--coral-light)','var(--gray-light)','var(--green-light)'
+      ];
+
+      document.getElementById('reward-grid').innerHTML = appData.rewards.map((r, i) => `
+        <div class="reward-card" onclick="openRedeem(${i})">
+          <div class="reward-img" style="background:${r.color || bgColors[i%6]}">${r.icon}</div>
+          <div class="reward-body">
+            <div class="reward-name">${r.name}</div>
+            <div class="reward-pts">⭐ ${r.pts.toLocaleString('id-ID')} Poin</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">Stok: ${r.stock}</div>
+            <button class="btn btn-sm ${r.can ? 'btn-primary' : 'btn-outline'}"
+              style="width:100%;margin-top:0.8rem;${!r.can ? 'opacity:0.55' : ''}"
+              onclick="event.stopPropagation();openRedeem(${i})">
+              ${r.can ? 'Tukar Sekarang' : (r.stock <= 0 ? 'Stok Habis' : 'Poin Tidak Cukup')}
+            </button>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('reward-list').innerHTML = '';
+    })
+    .catch(err => console.error('loadRewards:', err));
+
+  loadRedeemHistory();
+}
+
+function loadRedeemHistory() {
+  fetch("api/redeem_history.php")
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.getElementById('redeem-history');
+      if (!tbody) return;
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Belum ada penukaran reward</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(r => `
+        <tr>
+          <td>${r.date}</td>
+          <td>${r.icon} ${r.reward}</td>
+          <td style="color:var(--coral);font-weight:600">-${parseInt(r.pts).toLocaleString('id-ID')} pts</td>
+          <td style="font-size:0.78rem;font-family:monospace">${r.voucher_code || '-'}</td>
+          <td><span class="badge ${r.status==='Aktif'?'badge-green':r.status==='Digunakan'?'badge-amber':'badge-gray'}">${r.status}</span></td>
+        </tr>`).join('');
+
+      const totalPts = data.reduce((s, r) => s + parseInt(r.pts), 0);
+      const el = document.getElementById('rew-redeemed');
+      if (el) el.textContent = totalPts.toLocaleString('id-ID');
+    })
+    .catch(err => console.error('loadRedeemHistory:', err));
+}
+
+function redeemReward(rewardId, ptsRequired) {
+  const formData = new FormData();
+  formData.append("reward_id", rewardId);
+
+  fetch("api/redeem_reward.php", { method: "POST", body: formData })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('redeem-modal').classList.remove('show');
+      if (data.status === 'success') {
+        showToast('🎉 Reward ditukar! Voucher: ' + data.voucher_code);
+        appData.user.points = data.new_points;
+        document.getElementById('sb-pts').textContent = '⭐ ' + data.new_points.toLocaleString('id-ID') + ' Poin';
+        document.getElementById('rew-pts-display').textContent = data.new_points.toLocaleString('id-ID');
+        loadRewards();
+        loadProfile();
+      } else if (data.status === 'not_enough_points') {
+        showToast('Poin tidak cukup ❌ (kamu: ' + data.user_points + ', butuh: ' + data.required + ')');
+      } else if (data.status === 'stock_empty') {
+        showToast('Stok reward sudah habis ❌');
+      } else if (data.status === 'not_logged_in') {
+        showPage('page-login');
+      } else {
+        showToast('Terjadi kesalahan, coba lagi ❌');
+      }
+    })
+    .catch(err => { console.error(err); showToast('Gagal terhubung ke server'); });
+}
+
+function openRedeem(idx) {
+  const r = appData.rewards[idx];
+  if (!r) return;
+  appData.currentRedeemReward = r;
+  document.getElementById('redeem-modal-icon').textContent = r.icon;
+  document.getElementById('redeem-modal-title').textContent = r.name;
+  document.getElementById('redeem-modal-pts').textContent = r.pts.toLocaleString('id-ID') + ' Poin';
+  document.getElementById('redeem-modal-desc').textContent =
+    r.can ? 'Kamu yakin ingin menukar reward ini?' :
+    (r.stock <= 0 ? 'Stok reward ini sudah habis.' : 'Poin kamu belum cukup. Kumpulkan lebih banyak poin!');
+  document.getElementById('redeem-modal').classList.add('show');
+}
+
+function doRedeem() {
+  const r = appData.currentRedeemReward;
+  if (!r) return;
+  if (!r.can) {
+    showToast(r.stock <= 0 ? 'Stok habis ❌' : 'Poin tidak cukup ❌');
+    document.getElementById('redeem-modal').classList.remove('show');
+    return;
+  }
+  redeemReward(r.id, r.pts);
+}
+
+// ═══════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════
+function renderHistory(filter) {
+  const all     = appData.history;
+  const dropoff = all.filter(t => t.type === 'dropoff');
+  const pickup  = all.filter(t => t.type === 'pickup');
+
+  // ── helper badge status ───────────────────────────
+  function statusBadge(s) {
+    const cl = s === 'Selesai' ? 'badge-green' : s === 'Pending' ? 'badge-amber' : 'badge-gray';
+    return `<span class="badge ${cl}">${s}</span>`;
+  }
+
+  // ── TAB SEMUA ─────────────────────────────────────
+  const semuaHtml = all.length ? all.map(t => {
+    const isPickup  = t.type === 'pickup';
+    const waktuCol  = isPickup
+      ? (t.pickup_date_label
+          ? `<span style="font-size:0.75rem;color:var(--text-muted)">Dibuat: ${t.created_at}</span><br>
+             <b>Jemput: ${t.pickup_date_label}${t.pickup_time ? ' '+t.pickup_time : ''}</b>`
+          : `<span style="font-size:0.75rem;color:var(--text-muted)">Dibuat: ${t.created_at}</span>`)
+      : `<b>${t.created_at}</b>`;
+    return `<tr>
+      <td style="font-size:0.82rem">${waktuCol}</td>
+      <td><span class="badge ${isPickup?'badge-blue':'badge-green'}">${isPickup?'Jemput':'Drop-off'}</span></td>
+      <td>${t.cat}</td>
+      <td>${t.weight ? parseFloat(t.weight).toFixed(1)+' kg' : '-'}</td>
+      <td style="font-weight:600;color:var(--green)">+${parseInt(t.pts).toLocaleString('id-ID')} pts</td>
+      <td>${statusBadge(t.status_display || t.status)}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem">Belum ada transaksi</td></tr>';
+
+  // ── TAB DROP-OFF ──────────────────────────────────
+  const dropoffHtml = dropoff.length ? dropoff.map(t => `
+    <tr>
+      <td><b>${t.created_at}</b></td>
+      <td>${t.cat}</td>
+      <td>${t.weight ? parseFloat(t.weight).toFixed(1)+' kg' : '-'}</td>
+      <td style="font-weight:600;color:var(--green)">+${parseInt(t.pts).toLocaleString('id-ID')} pts</td>
+      <td>${statusBadge(t.status_display || t.status)}</td>
+    </tr>`).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1.5rem">Belum ada transaksi drop-off</td></tr>';
+
+  // ── TAB PICKUP ────────────────────────────────────
+  const pickupHtml = pickup.length ? pickup.map(t => {
+    const jadwal = t.pickup_date_label
+      ? `<b>${t.pickup_date_label}</b>${t.pickup_time ? '<br><span style="font-size:0.78rem;color:var(--text-muted)">'+t.pickup_time+'</span>' : ''}`
+      : '<span style="color:var(--text-muted);font-size:0.8rem">Tidak dijadwalkan</span>';
+    return `<tr>
+      <td style="font-size:0.82rem">${t.created_at}</td>
+      <td style="font-size:0.82rem">${jadwal}</td>
+      <td>${t.cat}</td>
+      <td>${t.weight ? parseFloat(t.weight).toFixed(1)+' kg' : '-'}</td>
+      <td style="font-weight:600;color:var(--green)">+${parseInt(t.pts).toLocaleString('id-ID')} pts</td>
+      <td>${statusBadge(t.status_display || t.status)}</td>
+    </tr>`;
+  }).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem">Belum ada pesanan jemput sampah</td></tr>';
+
+  document.getElementById('hist-table-semua').innerHTML   = semuaHtml;
+  document.getElementById('hist-table-dropoff').innerHTML = dropoffHtml;
+  document.getElementById('hist-table-pickup').innerHTML  = pickupHtml;
+}
+
+function filterHistory(type, btn) {
+  document.querySelectorAll('#sec-history .btn').forEach(b => {
+    b.className = 'btn btn-sm btn-outline';
+  });
+  if (btn) btn.className = 'btn btn-sm btn-primary';
+
+  // Tampilkan tabel yang sesuai
+  document.getElementById('hist-semua').style.display   = type==='semua'   ? '' : 'none';
+  document.getElementById('hist-dropoff').style.display = type==='dropoff' ? '' : 'none';
+  document.getElementById('hist-pickup').style.display  = type==='pickup'  ? '' : 'none';
+
+  renderHistory(type);
+}
+
+function loadTransactions() {
+  fetch("api/transactions.php")
+    .then(r => r.json())
+    .then(data => {
+      appData.history = data.map(item => ({
+        date:             item.created_at,
+        type:             item.type || 'dropoff',
+        cat:              item.category,
+        weight:           item.weight,
+        pts:              parseInt(item.points),
+        status:           item.status,
+        status_display:   item.status_display || item.status,
+        created_at:       item.created_at,
+        pickup_date_label:item.pickup_date_label || null,
+        pickup_time:      item.pickup_time || null,
+      }));
+      renderHistory('semua');
+    })
+    .catch(err => console.error('loadTransactions:', err));
+}
+
+// ═══════════════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════════════
+function renderMap() {
+  const pins = document.getElementById('map-pins');
+  pins.innerHTML = appData.banks.map((b,i)=>`
+    <div class="map-pin" style="top:${b.top};left:${b.left}" onclick="showToast('${b.name}')">
+      <div class="map-pin-dot"></div>
+      <div class="map-pin-label">BS ${i+1}</div>
+    </div>`).join('');
+  const list = document.getElementById('bank-list');
+  list.innerHTML = appData.banks.map(b=>`
+    <div class="card" style="margin:0">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div style="width:38px;height:38px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🏦</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem">${b.name}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px">📍 ${b.addr}</div>
+          <div style="font-size:0.78rem;color:var(--green);margin-top:2px">🕐 ${b.hours}</div>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" style="width:100%;margin-top:0.8rem" onclick="showToast('Navigasi ke ${b.name} dibuka!')">Navigasi →</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// EDUKASI
+// ═══════════════════════════════════════════════════
+function renderEdukasi() {
+  document.getElementById('edu-content').innerHTML = appData.eduContent.map((e,i)=>`
+    <div class="edu-card" style="margin-bottom:0.8rem">
+      <div class="edu-card-header" onclick="toggleEdu(${i})">
+        <span style="font-size:1.4rem">${e.icon}</span>
+        <span>${e.title}</span>
+        <span style="margin-left:auto;color:var(--text-muted)">▾</span>
+      </div>
+      <div class="edu-body" id="edu-${i}">${e.body}</div>
+    </div>`).join('');
+}
+
+function toggleEdu(i) {
+  const body = document.getElementById('edu-'+i);
+  body.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════════════
+function saveProfile() {
+  const name  = document.getElementById('prof-name-inp').value.trim();
+  const email = document.getElementById('prof-email-inp').value.trim();
+  const phone = document.getElementById('prof-phone-inp').value.trim();
+
+  if (!name || !email) { showToast('Nama dan email wajib diisi!'); return; }
+  if (!email.includes('@')) { showToast('Format email tidak valid ❌'); return; }
+
+  const fd = new FormData();
+  fd.append('name',  name);
+  fd.append('email', email);
+  fd.append('phone', phone);
+
+  fetch("api/update_profile.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        // Update appData & UI
+        appData.user.name  = name;
+        appData.user.email = email;
+        appData.user.phone = phone;
+        const init = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        document.getElementById('sb-avatar').textContent   = init;
+        document.getElementById('sb-name').textContent     = name;
+        document.getElementById('prof-avatar').textContent = init;
+        document.getElementById('prof-name').textContent   = name;
+        showToast('Profil berhasil diperbarui! ✅');
+      } else if (data.status === 'email_exists') {
+        showToast('Email sudah digunakan akun lain ❌');
+      } else if (data.status === 'not_logged_in') {
+        showPage('page-login');
+      } else {
+        showToast('Gagal menyimpan: ' + (data.message || data.status));
+      }
+    })
+    .catch(() => showToast('Terjadi error, coba lagi'));
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════
+function loadAdminTransactions() {
+  fetch("api/admin_transactions.php")
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('admin-trx-table').innerHTML = data.map(item => {
+        const isPickup   = item.type === 'pickup';
+        const typeBadge  = isPickup
+          ? '<span class="badge badge-blue">Jemput</span>'
+          : '<span class="badge badge-green">Drop-off</span>';
+        const jadwal = isPickup && item.pickup_label
+          ? `<span style="font-size:0.75rem;color:var(--text-muted)">Dibuat: ${item.created_at}</span><br><b>${item.pickup_label}</b>`
+          : item.created_at;
+        const statusClass = item.status === 'Selesai' ? 'badge-green'
+                          : item.status === 'Dibatalkan' ? 'badge-gray' : 'badge-amber';
+        return `<tr>
+          <td style="font-size:0.78rem;color:var(--text-muted)">#${item.id}</td>
+          <td>${item.name}</td>
+          <td>${typeBadge}</td>
+          <td>${item.category}</td>
+          <td>${parseFloat(item.weight).toFixed(1)} kg</td>
+          <td style="color:var(--green);font-weight:600">+${item.points}</td>
+          <td style="font-size:0.82rem">${jadwal}</td>
+          <td><span class="badge ${statusClass}">${item.status}</span></td>
+          <td>
+            <select onchange="adminUpdateTrxStatus(${item.id}, this.value, this)"
+              style="font-size:0.8rem;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);cursor:pointer">
+              <option value="Pending"     ${item.status==='Pending'     ? 'selected':''}>Pending</option>
+              <option value="Selesai"     ${item.status==='Selesai'     ? 'selected':''}>Selesai</option>
+              <option value="Dibatalkan"  ${item.status==='Dibatalkan'  ? 'selected':''}>Dibatalkan</option>
+            </select>
+          </td>
+        </tr>`;
+      }).join('');
+    })
+    .catch(err => console.error('loadAdminTransactions:', err));
+}
+
+function adminUpdateTrxStatus(id, newStatus, selectEl) {
+  const fd = new FormData();
+  fd.append('id',     id);
+  fd.append('status', newStatus);
+
+  // Visual feedback saat proses
+  selectEl.disabled = true;
+
+  fetch("api/update_trx_status.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      selectEl.disabled = false;
+      if (data.status === 'success') {
+        showToast('Status transaksi #' + id + ' → ' + newStatus + ' ✅');
+        // Update badge status di baris yang sama tanpa reload penuh
+        const badge = selectEl.closest('tr').querySelector('.badge');
+        badge.textContent = newStatus;
+        badge.className   = 'badge ' + (newStatus==='Selesai' ? 'badge-green' : newStatus==='Dibatalkan' ? 'badge-gray' : 'badge-amber');
+      } else {
+        showToast('Gagal ubah status ❌');
+        loadAdminTransactions(); // reload untuk reset select
+      }
+    })
+    .catch(() => {
+      selectEl.disabled = false;
+      showToast('Terjadi error ❌');
+    });
+}
+
+function loadAdminOverview() {
+  fetch("api/admin_overview.php")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("ov-total-users").textContent = data.total_users;
+      document.getElementById("ov-total-transactions").textContent = data.total_transactions;
+      document.getElementById("ov-total-points").textContent = Number(data.total_points).toLocaleString();
+      document.getElementById("ov-total-weight").textContent = data.total_weight + " kg";
+    })
+    .catch(err => console.error('loadAdminOverview:', err));
+}
+
+function loadAdminLeaderboard() {
+  fetch("api/admin_leaderboard.php")
+    .then(response => response.json())
+    .then(data => {
+      const rankColors = ['gold', 'silver', 'bronze'];
+      const bgColors = ['#9FE1CB', '#D3D1C7', '#F5C4B3', 'var(--green-light)', 'var(--blue-light)'];
+      document.getElementById('lb-list').innerHTML = data.map((u, i) => `
+        <div class="lb-row">
+          <div class="lb-rank ${rankColors[i] || ''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
+          <div class="avatar" style="background:${bgColors[i%5]};color:var(--green-dark)">${u.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.9rem">${u.name}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted)">${u.transactions || 0} transaksi</div>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">⭐ ${Number(u.points).toLocaleString()}</div>
+        </div>`).join('');
+    })
+    .catch(err => console.error('loadAdminLeaderboard:', err));
+}
+
+function loadAdminUsers() {
+  fetch("api/admin_users.php")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('admin-users-table').innerHTML = data.map(user => `
+        <tr>
+          <td><b>${user.name}</b></td>
+          <td style="color:var(--text-muted);font-size:0.82rem">${user.email}</td>
+          <td><b>${Number(user.points).toLocaleString()}</b></td>
+          <td>${user.transactions || 0}</td>
+          <td><span class="badge badge-green">${user.level || 'Eco Starter'}</span></td>
+          <td><span class="badge ${user.role==='admin'?'badge-blue':'badge-green'}">${user.role}</span></td>
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})" style="width:auto">Hapus</button>
+          </td>
+        </tr>`).join('');
+    })
+    .catch(err => console.error('loadAdminUsers:', err));
+}
+
+function deleteUser(id) {
+  if (!confirm("Hapus user ini?")) return;
+  const formData = new FormData();
+  formData.append("id", id);
+  fetch("api/delete_user.php", { method: "POST", body: formData })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        showToast("User berhasil dihapus ✅");
+        loadAdminUsers();
+        loadAdminOverview();
+      } else {
+        showToast("Gagal menghapus user ❌");
+      }
+    })
+    .catch(err => console.error('deleteUser:', err));
+}
+
+function loadAdminRewards() {
+  fetch("api/admin_rewards.php")
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('admin-rewards-table').innerHTML = data.map(r => `
+        <tr style="${r.is_active=='0' ? 'opacity:0.45' : ''}">
+          <td>${r.icon} <b>${r.title}</b><br><span style="font-size:0.75rem;color:var(--text-muted)">${r.category}</span></td>
+          <td style="font-weight:600;color:var(--green)">⭐ ${Number(r.points_required).toLocaleString('id-ID')}</td>
+          <td>${r.stock}</td>
+          <td>${r.total_redeemed}</td>
+          <td><span class="badge ${r.is_active=='1'?'badge-green':'badge-gray'}">${r.is_active=='1'?'Aktif':'Nonaktif'}</span></td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-sm btn-outline" style="width:auto"
+              onclick="toggleRewardActive(${r.id},${r.is_active})">
+              ${r.is_active=='1'?'Nonaktifkan':'Aktifkan'}
+            </button>
+            <button class="btn btn-sm btn-danger" style="width:auto"
+              onclick="adminDeleteReward(${r.id})">Hapus</button>
+          </td>
+        </tr>`).join('');
+    })
+    .catch(err => console.error('loadAdminRewards:', err));
+}
+
+function adminAddReward() {
+  const title = document.getElementById('new-reward-title').value.trim();
+  const desc  = document.getElementById('new-reward-desc').value.trim();
+  const icon  = document.getElementById('new-reward-icon').value.trim() || '🎁';
+  const cat   = document.getElementById('new-reward-cat').value;
+  const pts   = document.getElementById('new-reward-pts').value;
+  const stock = document.getElementById('new-reward-stock').value;
+
+  if (!title || !pts || !stock) { showToast('Lengkapi nama, poin, dan stok!'); return; }
+
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', desc);
+  fd.append('icon', icon);
+  fd.append('category', cat);
+  fd.append('points_required', pts);
+  fd.append('stock', stock);
+
+  fetch("api/add_reward.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        document.getElementById('add-reward-modal').classList.remove('show');
+        showToast('Reward baru berhasil ditambahkan! ✅');
+        loadAdminRewards();
+        ['new-reward-title','new-reward-desc','new-reward-icon','new-reward-pts','new-reward-stock']
+          .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+      } else {
+        showToast('Gagal: ' + (data.message || data.status));
+      }
+    })
+    .catch(() => showToast('Gagal terhubung ke server'));
+}
+
+function toggleRewardActive(id, currentActive) {
+  const newActive = currentActive == 1 ? 0 : 1;
+  const fd = new FormData();
+  fd.append('id',        id);
+  fd.append('is_active', newActive);
+  const row   = document.querySelector(`button[onclick="toggleRewardActive(${id},${currentActive})"]`).closest('tr');
+  const cells = row.querySelectorAll('td');
+  fd.append('title',           cells[0].querySelector('b').textContent.trim());
+  fd.append('category',        cells[0].querySelector('span').textContent.trim());
+  fd.append('points_required', cells[1].textContent.replace(/[^\d]/g,''));
+  fd.append('stock',           cells[2].textContent.trim());
+  fd.append('icon',            '🎁');
+  fd.append('description',     '');
+
+  fetch("api/update_reward.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showToast(newActive == 1 ? 'Reward diaktifkan ✅' : 'Reward dinonaktifkan — tidak muncul di halaman user');
+        loadAdminRewards();
+      } else {
+        showToast('Gagal update ❌');
+      }
+    });
+}
+
+function adminDeleteReward(id) {
+  if (!confirm("Nonaktifkan/hapus reward ini?")) return;
+  const fd = new FormData();
+  fd.append('id', id);
+  fetch("api/delete_reward.php", { method: "POST", body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') { showToast('Reward dihapus ✅'); loadAdminRewards(); }
+      else showToast('Gagal hapus ❌');
+    });
+}
+
+function initAdmin() {
+  loadAdminOverview();
+  loadAdminUsers();
+  loadAdminTransactions();
+  loadAdminLeaderboard();
+  loadAdminRewards();
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════
+// DATE DROPDOWNS  (hari ini s/d +7 hari)
+// ═══════════════════════════════════════════════════
+function fillDateDropdowns() {
+  const hariNames  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const bulanNames = ['Januari','Februari','Maret','April','Mei','Juni',
+                      'Juli','Agustus','September','Oktober','November','Desember'];
+  const options = [];
+  const today   = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let i = 0; i <= 7; i++) {
+    const d     = new Date(today);
+    d.setDate(today.getDate() + i);
+    const label = hariNames[d.getDay()] + ', ' + d.getDate() + ' ' +
+                  bulanNames[d.getMonth()] + ' ' + d.getFullYear();
+    options.push(`<option value="${label}">${i === 0 ? 'Hari ini — ' + label : label}</option>`);
+  }
+  const puDate = document.getElementById('pu-date');
+  if (puDate) puDate.innerHTML = options.join('');
+
+  const dispEl = document.getElementById('do-datetime-display');
+  if (dispEl) dispEl.textContent = getNowLabel();
+}
+
+window.onload = function() {
+  fillDateDropdowns();   
+  fetch("api/check_session.php")
+    .then(response => response.json())
+    .then(data => {
+      if (data.logged_in) {
+        if (data.role === "admin") {
+          showPage('page-admin');
+        } else {
+          showPage('page-app');
+          loadDashboard();
+          loadRewards();
+        }
+      } else {
+        showPage('page-login');
+      }
+    })
+    .catch(() => showPage('page-login'));
+};
+</script>
 </body>
 </html>
